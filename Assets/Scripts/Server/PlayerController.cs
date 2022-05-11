@@ -1,7 +1,8 @@
 #if !CLIENT_BUILD || UNITY_EDITOR
+using Unity.Netcode;
 using UnityEngine;
 
-public partial class PlayerController : MonoBehaviour
+public partial class PlayerController : NetworkBehaviour
 {
     // Server-only serialized fields, also accessible in editor.
     public string Foo;

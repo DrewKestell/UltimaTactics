@@ -1,9 +1,10 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public partial class PlayerController : MonoBehaviour
+public partial class PlayerController : NetworkBehaviour
 {
     // Common variables needed on both server and client go here.
-    public float movementSpeed;
+    public NetworkVariable<Vector3> Position = new();
 
     void Start()
     {
