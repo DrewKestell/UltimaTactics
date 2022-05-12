@@ -25,8 +25,7 @@ public class MenuBuildOptions
     {
         UnityEngine.Debug.Log("Building Local Client");
 
-        CleanDefineSymbols();
-        AddDefineSymbols(new[] { "CLIENT_BUILD" });
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "CLIENT_BUILD");
 
         var outputLocation = $@"{BuildsDirectory}\{localClientName}\{localClientName}.exe";
         var options = new BuildPlayerOptions()
@@ -39,8 +38,6 @@ public class MenuBuildOptions
 
         var report = BuildPipeline.BuildPlayer(options);
         LogReport(report);
-        CleanDefineSymbols();
-        UnityEngine.Debug.Log("WTF");
         OpenInWindowsExplorer(Path.GetDirectoryName(outputLocation));
     }
 
@@ -57,8 +54,7 @@ public class MenuBuildOptions
     {
         UnityEngine.Debug.Log("Building local Server");
 
-        CleanDefineSymbols();
-        AddDefineSymbols(new[] { "SERVER_BUILD" });
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "SERVER_BUILD");
 
         var outputLocation = $@"{BuildsDirectory}\{localServerName}\{localServerName}.exe";
         var options = new BuildPlayerOptions()
@@ -73,7 +69,6 @@ public class MenuBuildOptions
         var report = BuildPipeline.BuildPlayer(options);
 
         LogReport(report);
-        CleanDefineSymbols();
         OpenInWindowsExplorer(Path.GetDirectoryName(outputLocation));
     }
 
@@ -90,8 +85,7 @@ public class MenuBuildOptions
     {
         UnityEngine.Debug.Log("Building Headless Server");
 
-        CleanDefineSymbols();
-        AddDefineSymbols(new[] { "SERVER_BUILD" });
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "SERVER_BUILD");
 
         var options = new BuildPlayerOptions()
         {
@@ -106,7 +100,6 @@ public class MenuBuildOptions
 
         LogReport(report);
         CreateZip();
-        CleanDefineSymbols();
         OpenInWindowsExplorer(Path.GetDirectoryName(HeadlessServerLocationPathName));
     }
 
@@ -124,12 +117,10 @@ public class MenuBuildOptions
 
     private static void LogReport(BuildReport report)
     {
-        UnityEngine.Debug.Log(report.summary);
         if (report.summary.result == BuildResult.Succeeded)
         {
             UnityEngine.Debug.Log("Build succeeded: " + report.summary.totalSize * .000001 + " MB");
         }
-
         if (report.summary.result == BuildResult.Failed)
         {
             UnityEngine.Debug.Log("Build failed");
@@ -148,27 +139,8 @@ public class MenuBuildOptions
         UnityEngine.Debug.Log($@"Headless server zipped to: {HeadlessServerZipPath}");
     }
 
-    private static void CleanDefineSymbols()
-    {
-        var buildTargetGroup = BuildTargetGroup.Standalone;
-        var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-        var allDefines = definesString.Split(';').ToList();
-        allDefines.RemoveAll(a => a == "SERVER_BUILD" || a == "CLIENT_BUILD");
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, string.Join(";", allDefines.ToArray()));
-    }
-
-    private static void AddDefineSymbols(string[] symbols)
-    {
-        var buildTargetGroup = BuildTargetGroup.Standalone;
-        var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-        var allDefines = definesString.Split(';').ToList();
-        allDefines.AddRange(symbols.Except(allDefines));
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, string.Join(";", allDefines.ToArray()));
-    }
-
     private static void OpenInWindowsExplorer(string path)
     {
-        UnityEngine.Debug.Log($"Trying to build to {path}");
         if (Directory.Exists(path))
         {
             var startInfo = new ProcessStartInfo

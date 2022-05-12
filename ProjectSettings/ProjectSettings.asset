@@ -610,6 +610,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
+    Server: SERVER_BUILD
     Standalone: CLIENT_BUILD
   additionalCompilerArguments: {}
   platformArchitecture: {}

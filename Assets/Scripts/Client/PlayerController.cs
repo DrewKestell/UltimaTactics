@@ -1,4 +1,4 @@
-#if !SERVER_BUILD || UNITY_EDITOR
+#if CLIENT_BUILD || UNITY_EDITOR
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ public partial class PlayerController : NetworkBehaviour
     // exception here, to ensure we don't conflict with the
     // server file's method definitions.
 
-#if !SERVER_BUILD
+#if CLIENT_BUILD
     private CharacterController characterController;
     private Animator animator;
 

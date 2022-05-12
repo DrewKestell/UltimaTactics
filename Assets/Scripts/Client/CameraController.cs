@@ -1,3 +1,4 @@
+#if CLIENT_BUILD|| UNITY_EDITOR
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,3 +18,4 @@ public class CameraController : MonoBehaviour
         transform.position = player.transform.position + offset;
     }
 }
+#endif

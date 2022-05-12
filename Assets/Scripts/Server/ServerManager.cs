@@ -1,4 +1,4 @@
-#if !CLIENT_BUILD || UNITY_EDITOR
+#if SERVER_BUILD || UNITY_EDITOR
 using Unity.Netcode;
 using UnityEngine;
 

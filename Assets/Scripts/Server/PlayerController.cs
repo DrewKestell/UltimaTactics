@@ -1,4 +1,4 @@
-#if !CLIENT_BUILD || UNITY_EDITOR
+#if SERVER_BUILD || UNITY_EDITOR
 using Unity.Netcode;
 
 public partial class PlayerController : NetworkBehaviour
@@ -11,7 +11,7 @@ public partial class PlayerController : NetworkBehaviour
     // exception here, to ensure we don't conflict with the
     // server file's method definitions.
 
-#if !CLIENT_BUILD
+#if SERVER_BUILD
     void OnStartup()
     {
     }
