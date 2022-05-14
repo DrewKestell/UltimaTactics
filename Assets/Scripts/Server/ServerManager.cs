@@ -6,7 +6,7 @@ public class ServerManager : MonoBehaviour
 {
     private void Start()
     {
-        NetworkManager.Singleton.StartClient();
+        NetworkManager.Singleton.StartServer();
     }
 }
 #endif

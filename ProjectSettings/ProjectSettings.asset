@@ -611,7 +611,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     Server: SERVER_BUILD
-    Standalone: CLIENT_BUILD
+    Standalone: SERVER_BUILD
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
