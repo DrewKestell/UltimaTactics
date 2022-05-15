@@ -1,12 +1,14 @@
 #if CLIENT_BUILD || UNITY_EDITOR
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using static UnityEngine.InputSystem.InputAction;
 
 public partial class PlayerController : NetworkBehaviour
 {
     // Client-only serialized fields, also accessible in editor.
-    [SerializeField] private int moveSpeed;
-    [SerializeField] private int rotateSpeed;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float rotateSpeed;
 
     // Client-only methods and unserialized data.
     // We don't use the || UNITY_EDITOR
@@ -16,14 +18,24 @@ public partial class PlayerController : NetworkBehaviour
 #if CLIENT_BUILD
     private CharacterController characterController;
     private Animator animator;
+    private ThirdPersonCamera thirdPersonCamera;
 
     private bool readyToDrawWeapons = true;
     private float combatStartTime;
+
+    private float turnMagnitude;
+    private float walkMagnitude;
+
+    // input state
+    private bool leftClickHeld;
+    private bool rightClickHeld;
 
     private void OnStartup()
     {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        thirdPersonCamera = GameObject.Find("ThirdPersonCamera").GetComponent<ThirdPersonCamera>();
+        thirdPersonCamera.PlayerTransform = transform;
     }
 
     private void OnUpdate()
@@ -35,14 +47,67 @@ public partial class PlayerController : NetworkBehaviour
             SheathSwordAndShield();
         }
 
-        Debug.Log(animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
-
-        if (Input.GetButtonDown("Fire1"))
-        {
-            Attack();
-        }
+        //if (Input.GetButtonDown("Fire1"))
+        //{
+        //    Attack();
+        //}
 
         Move();
+    }
+
+    // Input
+    private void OnTurn(InputValue inputValue)
+    {
+        turnMagnitude = inputValue.Get<float>();
+    }
+
+    private void OnWalk(InputValue inputValue)
+    {
+        walkMagnitude = inputValue.Get<float>();
+    }
+    
+    private void OnCameraZoom(InputValue inputValue)
+    {
+        thirdPersonCamera.Zoom(inputValue.Get<Vector2>().normalized.y);
+    }
+
+    private void OnLeftClick(InputValue inputValue)
+    {
+        leftClickHeld = inputValue.isPressed;
+    }
+
+    private void OnRightClick(InputValue inputValue)
+    {
+        rightClickHeld = inputValue.isPressed;
+
+        if (!rightClickHeld)
+        {
+            turnMagnitude = 0.0f;
+        }
+    }
+
+    private void OnMoveMouse(InputValue inputValue)
+    {
+        // right-click + drag -> rotate player and camera
+        if (rightClickHeld)
+        {
+            var value = inputValue.Get<Vector2>();
+
+            var deltaX = value.x;
+            turnMagnitude = deltaX;
+
+            var deltaY = value.y;
+            thirdPersonCamera.Tilt(deltaY);
+
+            thirdPersonCamera.FollowPlayerRotation = true;
+        }
+
+        // left-click + drag -> rotate camera around player without rotating player
+        else if (leftClickHeld)
+        {
+            var value = inputValue.Get<Vector2>();
+            thirdPersonCamera.UpdateOrbitPosition(value);
+        }
     }
 
     private void Move()
@@ -53,12 +118,10 @@ public partial class PlayerController : NetworkBehaviour
             characterController.Move(moveY * Time.deltaTime);
         }
 
-        var moveX = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-
-        if (moveX == Vector3.zero)
+        if (turnMagnitude == 0 && walkMagnitude == 0)
             Idle();
         else
-            Move(moveX);
+            ClientMove();
     }
 
     private void Idle()
@@ -67,15 +130,29 @@ public partial class PlayerController : NetworkBehaviour
         animator.SetFloat("Speed", 0, 0.1f, Time.deltaTime);
     }
 
-    private void Move(Vector3 moveX)
+    private void ClientMove()
     {
+        var moveVector = moveSpeed * Time.deltaTime * walkMagnitude * transform.forward;
         animator.SetBool("IsMoving", true);
-        float magnitude = Mathf.Clamp01(moveX.magnitude);
-        animator.SetFloat("Speed", magnitude, 0.1f, Time.deltaTime);
-        characterController.Move(moveSpeed * Time.deltaTime * moveX);
+        animator.SetFloat("Speed", walkMagnitude, 0.1f, Time.deltaTime);
+        characterController.Move(moveVector);
 
-        var rotation = Quaternion.LookRotation(moveX);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * rotateSpeed);
+        transform.Rotate(0.0f, turnMagnitude * rotateSpeed, 0.0f);
+
+        if (!thirdPersonCamera.FollowPlayerRotation)
+        {
+            if (leftClickHeld)
+            {
+                thirdPersonCamera.transform.position = thirdPersonCamera.transform.position + moveVector;
+            }
+            else
+            {
+                if (!thirdPersonCamera.LockingToPlayer)
+                {
+                    thirdPersonCamera.LockToPlayer();
+                }
+            }
+        }
     }
 
     private void Attack()

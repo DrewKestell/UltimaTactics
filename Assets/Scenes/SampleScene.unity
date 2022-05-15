@@ -528,7 +528,7 @@ Transform:
   m_GameObject: {fileID: 1363530735}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 1, z: 5}
+  m_LocalScale: {x: 15, y: 1, z: 15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -644,7 +644,7 @@ GameObject:
   - component: {fileID: 1492940699}
   - component: {fileID: 1492940702}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: ThirdPersonCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -681,11 +681,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: 0.1
+  far clip plane: 5000
+  field of view: 40
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -708,7 +708,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1492940698}
-  m_LocalRotation: {x: 0.34039423, y: -0, z: -0, w: 0.9402829}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 10.16, z: -13.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -725,9 +725,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1492940698}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e84946c62104714b925ffb192ab3262, type: 3}
+  m_Script: {fileID: 11500000, guid: e5fed271149b67c4aba58c0a317516ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerTransform: {fileID: 0}
+  cameraDistance: 23
+  zoomModifier: 2
+  verticalOffset: 15
+  tiltModifier: 0.1
 --- !u!1 &1734277392
 GameObject:
   m_ObjectHideFlags: 0
@@ -791,10 +796,10 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1734277393}
-    PlayerPrefab: {fileID: 7191018049753068363, guid: f1233ab84bd45424ca35eb07628e88f0, type: 3}
+    PlayerPrefab: {fileID: 7617732534384799867, guid: f1233ab84bd45424ca35eb07628e88f0, type: 3}
     NetworkPrefabs:
     - Override: 0
-      Prefab: {fileID: 7191018049753068363, guid: f1233ab84bd45424ca35eb07628e88f0, type: 3}
+      Prefab: {fileID: 7617732534384799867, guid: f1233ab84bd45424ca35eb07628e88f0, type: 3}
       SourcePrefabToOverride: {fileID: 0}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
