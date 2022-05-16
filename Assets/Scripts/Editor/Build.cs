@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -20,24 +20,10 @@ public class MenuBuildOptions
     private static string HeadlessServerLocationPathName => $@"{BuildsDirectory}\{headlessServerName}\{headlessServerName}.exe";
     private static string HeadlessServerZipPath => $@"{ProjectParentDirectory}\{headlessServerName}.zip";
 
-    [MenuItem("Build/Set CLIENT_BUILD Define %&c")]
-    public static void SetClientBuildDefineSymbol()
-    {
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "CLIENT_BUILD");
-        AssetDatabase.Refresh();
-    }
-
-    [MenuItem("Build/Set SERVER_BUILD Define %&c")]
-    public static void SetServerBuildDefineSymbol()
-    {
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "SERVER_BUILD");
-        AssetDatabase.Refresh();
-    }
-
     [MenuItem("Build/Local Client %&c")]
     public static void BuildClient()
     {
-        UnityEngine.Debug.Log("Building Local Client");
+        Debug.Log("Building Local Client");
 
         var outputLocation = $@"{BuildsDirectory}\{localClientName}\{localClientName}.exe";
         var options = new BuildPlayerOptions()
@@ -53,18 +39,10 @@ public class MenuBuildOptions
         OpenInWindowsExplorer(Path.GetDirectoryName(outputLocation));
     }
 
-    [MenuItem("Run/Local Client #&c")]
-    public static void RunClient()
-    {
-        var proc = new Process();
-        proc.StartInfo.FileName = $@"{BuildsDirectory}\{localClientName}\{localClientName}.exe";
-        proc.Start();
-    }
-
     [MenuItem("Build/Local Server %&s")]
     public static void BuildServer()
     {
-        UnityEngine.Debug.Log("Building local Server");
+        Debug.Log("Building local Server");
 
         var outputLocation = $@"{BuildsDirectory}\{localServerName}\{localServerName}.exe";
         var options = new BuildPlayerOptions()
@@ -82,18 +60,16 @@ public class MenuBuildOptions
         OpenInWindowsExplorer(Path.GetDirectoryName(outputLocation));
     }
 
-    [MenuItem("Run/Local Server #&s")]
-    public static void RunServer()
-    {
-        var proc = new Process();
-        proc.StartInfo.FileName = $@"{BuildsDirectory}\{localServerName}\{localServerName}.exe";
-        proc.Start();
-    }
-
     [MenuItem("Build/Headless Server %&h")]
     public static void BuildHeadlessServer()
     {
-        UnityEngine.Debug.Log("Building Headless Server");
+        Debug.Log("Building Headless Server");
+
+        EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Server, BuildTarget.StandaloneWindows64);
+        PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Server, "SERVER_BUILD");
+        AssetDatabase.Refresh();
+
+        Debug.Log(HeadlessServerLocationPathName);
 
         var options = new BuildPlayerOptions()
         {
@@ -109,29 +85,21 @@ public class MenuBuildOptions
         LogReport(report);
         CreateZip();
         OpenInWindowsExplorer(Path.GetDirectoryName(HeadlessServerLocationPathName));
-    }
 
-    [MenuItem("Run/Headless Server #&h")]
-    public static void RunHeadlessServer()
-    {
-        var proc = new Process();
-        proc.StartInfo.FileName = "CMD.EXE";
-        proc.StartInfo.WorkingDirectory = $@"{ProjectParentDirectory}\MockVmAgent";
-        proc.StartInfo.UseShellExecute = true;
-        UnityEngine.Debug.Log($@"running agentlocated at: { ProjectParentDirectory}\MockVmAgent");
-        proc.StartInfo.Arguments = $@"/K {ProjectParentDirectory}\MockVmAgent\MockVmAgent.exe";
-        proc.Start();
+        EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Standalone, BuildTarget.StandaloneWindows64);
+        PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Standalone, "CLIENT_BUILD");
+        AssetDatabase.Refresh();
     }
 
     private static void LogReport(BuildReport report)
     {
         if (report.summary.result == BuildResult.Succeeded)
         {
-            UnityEngine.Debug.Log("Build succeeded: " + report.summary.totalSize * .000001 + " MB");
+            Debug.Log("Build succeeded: " + report.summary.totalSize * .000001 + " MB");
         }
         if (report.summary.result == BuildResult.Failed)
         {
-            UnityEngine.Debug.Log("Build failed");
+            Debug.Log("Build failed");
         }
     }
 
@@ -144,20 +112,20 @@ public class MenuBuildOptions
     {
         FileUtil.DeleteFileOrDirectory(HeadlessServerZipPath);
         ZipFile.CreateFromDirectory($@"{BuildsDirectory}\{headlessServerName}", HeadlessServerZipPath);
-        UnityEngine.Debug.Log($@"Headless server zipped to: {HeadlessServerZipPath}");
+        Debug.Log($@"Headless server zipped to: {HeadlessServerZipPath}");
     }
 
     private static void OpenInWindowsExplorer(string path)
     {
         if (Directory.Exists(path))
         {
-            var startInfo = new ProcessStartInfo
+            var startInfo = new System.Diagnostics.ProcessStartInfo
             {
                 Arguments = path,
                 FileName = "explorer.exe"
             };
 
-            Process.Start(startInfo);
+            System.Diagnostics.Process.Start(startInfo);
         }
     }
 }

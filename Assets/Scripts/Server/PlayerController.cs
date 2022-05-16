@@ -5,7 +5,6 @@ using UnityEngine;
 public partial class PlayerController : NetworkBehaviour
 {
     // Server-only serialized fields, also accessible in editor.
-    [SerializeField] private float rotateSpeed;
 
     // Server-only methods and unserialized data.
     // We don't use the || UNITY_EDITOR
@@ -32,6 +31,8 @@ public partial class PlayerController : NetworkBehaviour
             var moveY = new Vector3(0, Physics.gravity.y, 0);
             characterController.Move(moveY * Time.deltaTime);
         }
+
+        Debug.Log($"ServerRot: {turnMagnitude.Value * rotateSpeed}");
 
         characterController.Move(GetMoveVector());
         transform.Rotate(0.0f, turnMagnitude.Value * rotateSpeed, 0.0f);

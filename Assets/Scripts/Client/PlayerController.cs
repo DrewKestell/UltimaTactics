@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public partial class PlayerController : NetworkBehaviour
 {
     // Client-only serialized fields, also accessible in editor.
-    
+
     // Client-only methods and unserialized data.
     // We don't use the || UNITY_EDITOR
     // exception here, to ensure we don't conflict with the
@@ -104,6 +104,8 @@ public partial class PlayerController : NetworkBehaviour
 
     private void Move()
     {
+        Debug.Log($"ServerRot: {turnMagnitude.Value * rotateSpeed}");
+
         if (turnMagnitude.Value == 0 && walkMagnitude.Value == 0)
         {
             animator.SetBool("IsMoving", false);
