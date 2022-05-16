@@ -47,6 +47,11 @@ public partial class PlayerController : NetworkBehaviour
         Move();
     }
 
+    private void OnFixedUpdate()
+    {
+
+    }
+
     // Input
     private void OnTurn(InputValue inputValue)
     {
@@ -104,8 +109,6 @@ public partial class PlayerController : NetworkBehaviour
 
     private void Move()
     {
-        Debug.Log($"ServerRot: {turnMagnitude.Value * rotateSpeed}");
-
         if (turnMagnitude.Value == 0 && walkMagnitude.Value == 0)
         {
             animator.SetBool("IsMoving", false);

@@ -21,6 +21,10 @@ public partial class PlayerController : NetworkBehaviour
 
     private void OnUpdate()
     {
+    }
+
+    private void OnFixedUpdate()
+    {
         Move();
     }
 

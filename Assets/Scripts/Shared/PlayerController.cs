@@ -22,5 +22,10 @@ public partial class PlayerController : NetworkBehaviour
         Debug.Log($"IsServer: {NetworkManager.Singleton.IsServer}, IsClient: {NetworkManager.Singleton.IsClient}, TurnMagnitude: {turnMagnitude.Value}, WalkMagnitude: {walkMagnitude.Value}, IsOwner: {IsOwner}, NetworkObjectId: {NetworkObjectId}, OwnerClientId: {OwnerClientId}");
     }
 
+    private void FixedUpdate()
+    {
+        OnFixedUpdate();
+    }
+
     private Vector3 GetMoveVector() => moveSpeed * Time.deltaTime * walkMagnitude.Value * transform.forward;
 }
