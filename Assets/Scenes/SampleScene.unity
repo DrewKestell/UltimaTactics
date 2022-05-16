@@ -731,8 +731,9 @@ MonoBehaviour:
   PlayerTransform: {fileID: 0}
   cameraDistance: 23
   zoomModifier: 2
-  verticalOffset: 15
+  verticalOffset: 8
   tiltModifier: 0.1
+  interpolationFrameCount: 450
 --- !u!1 &1734277392
 GameObject:
   m_ObjectHideFlags: 0

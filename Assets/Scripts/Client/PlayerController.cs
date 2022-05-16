@@ -2,29 +2,22 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.InputSystem.InputAction;
 
 public partial class PlayerController : NetworkBehaviour
 {
     // Client-only serialized fields, also accessible in editor.
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float rotateSpeed;
-
+    
     // Client-only methods and unserialized data.
     // We don't use the || UNITY_EDITOR
     // exception here, to ensure we don't conflict with the
     // server file's method definitions.
 
 #if CLIENT_BUILD
-    private CharacterController characterController;
     private Animator animator;
     private ThirdPersonCamera thirdPersonCamera;
 
     private bool readyToDrawWeapons = true;
     private float combatStartTime;
-
-    private float turnMagnitude;
-    private float walkMagnitude;
 
     // input state
     private bool leftClickHeld;
@@ -32,7 +25,6 @@ public partial class PlayerController : NetworkBehaviour
 
     private void OnStartup()
     {
-        characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         thirdPersonCamera = GameObject.Find("ThirdPersonCamera").GetComponent<ThirdPersonCamera>();
         thirdPersonCamera.PlayerTransform = transform;
@@ -58,12 +50,12 @@ public partial class PlayerController : NetworkBehaviour
     // Input
     private void OnTurn(InputValue inputValue)
     {
-        turnMagnitude = inputValue.Get<float>();
+        turnMagnitude.Value = inputValue.Get<float>();
     }
 
     private void OnWalk(InputValue inputValue)
     {
-        walkMagnitude = inputValue.Get<float>();
+        walkMagnitude.Value = inputValue.Get<float>();
     }
     
     private void OnCameraZoom(InputValue inputValue)
@@ -82,7 +74,7 @@ public partial class PlayerController : NetworkBehaviour
 
         if (!rightClickHeld)
         {
-            turnMagnitude = 0.0f;
+            turnMagnitude.Value = 0.0f;
         }
     }
 
@@ -94,7 +86,7 @@ public partial class PlayerController : NetworkBehaviour
             var value = inputValue.Get<Vector2>();
 
             var deltaX = value.x;
-            turnMagnitude = deltaX;
+            turnMagnitude.Value = deltaX;
 
             var deltaY = value.y;
             thirdPersonCamera.Tilt(deltaY);
@@ -112,47 +104,36 @@ public partial class PlayerController : NetworkBehaviour
 
     private void Move()
     {
-        if (!characterController.isGrounded)
+        if (turnMagnitude.Value == 0 && walkMagnitude.Value == 0)
         {
-            var moveY = new Vector3(0, Physics.gravity.y, 0);
-            characterController.Move(moveY * Time.deltaTime);
+            animator.SetBool("IsMoving", false);
+            animator.SetFloat("Speed", 0, 0.1f, Time.deltaTime);
         }
-
-        if (turnMagnitude == 0 && walkMagnitude == 0)
-            Idle();
         else
-            ClientMove();
-    }
+        {
+            animator.SetBool("IsMoving", true);
+            animator.SetFloat("Speed", walkMagnitude.Value, 0.1f, Time.deltaTime);
 
-    private void Idle()
-    {
-        animator.SetBool("IsMoving", false);
-        animator.SetFloat("Speed", 0, 0.1f, Time.deltaTime);
+            if (!thirdPersonCamera.FollowPlayerRotation)
+            {
+                if (leftClickHeld)
+                {
+                    thirdPersonCamera.transform.position = thirdPersonCamera.transform.position + GetMoveVector();
+                }
+                else
+                {
+                    if (!thirdPersonCamera.LockingToPlayer)
+                    {
+                        thirdPersonCamera.LockToPlayer();
+                    }
+                }
+            }
+        }
     }
 
     private void ClientMove()
     {
-        var moveVector = moveSpeed * Time.deltaTime * walkMagnitude * transform.forward;
-        animator.SetBool("IsMoving", true);
-        animator.SetFloat("Speed", walkMagnitude, 0.1f, Time.deltaTime);
-        characterController.Move(moveVector);
-
-        transform.Rotate(0.0f, turnMagnitude * rotateSpeed, 0.0f);
-
-        if (!thirdPersonCamera.FollowPlayerRotation)
-        {
-            if (leftClickHeld)
-            {
-                thirdPersonCamera.transform.position = thirdPersonCamera.transform.position + moveVector;
-            }
-            else
-            {
-                if (!thirdPersonCamera.LockingToPlayer)
-                {
-                    thirdPersonCamera.LockToPlayer();
-                }
-            }
-        }
+        
     }
 
     private void Attack()

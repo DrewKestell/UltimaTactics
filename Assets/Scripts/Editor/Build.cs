@@ -20,12 +20,24 @@ public class MenuBuildOptions
     private static string HeadlessServerLocationPathName => $@"{BuildsDirectory}\{headlessServerName}\{headlessServerName}.exe";
     private static string HeadlessServerZipPath => $@"{ProjectParentDirectory}\{headlessServerName}.zip";
 
+    [MenuItem("Build/Set CLIENT_BUILD Define %&c")]
+    public static void SetClientBuildDefineSymbol()
+    {
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "CLIENT_BUILD");
+        AssetDatabase.Refresh();
+    }
+
+    [MenuItem("Build/Set SERVER_BUILD Define %&c")]
+    public static void SetServerBuildDefineSymbol()
+    {
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "SERVER_BUILD");
+        AssetDatabase.Refresh();
+    }
+
     [MenuItem("Build/Local Client %&c")]
     public static void BuildClient()
     {
         UnityEngine.Debug.Log("Building Local Client");
-
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "CLIENT_BUILD");
 
         var outputLocation = $@"{BuildsDirectory}\{localClientName}\{localClientName}.exe";
         var options = new BuildPlayerOptions()
@@ -53,8 +65,6 @@ public class MenuBuildOptions
     public static void BuildServer()
     {
         UnityEngine.Debug.Log("Building local Server");
-
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "SERVER_BUILD");
 
         var outputLocation = $@"{BuildsDirectory}\{localServerName}\{localServerName}.exe";
         var options = new BuildPlayerOptions()
@@ -84,8 +94,6 @@ public class MenuBuildOptions
     public static void BuildHeadlessServer()
     {
         UnityEngine.Debug.Log("Building Headless Server");
-
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "SERVER_BUILD");
 
         var options = new BuildPlayerOptions()
         {

@@ -1,3 +1,4 @@
+#if CLIENT_BUILD || UNITY_EDITOR
 using UnityEngine;
 
 public class ThirdPersonCamera : MonoBehaviour
@@ -7,15 +8,16 @@ public class ThirdPersonCamera : MonoBehaviour
     const float verticalOffsetMin = 0.0f;
     const float verticalOffsetMax = 40.0f;
 
+#if CLIENT_BUILD
     public Transform PlayerTransform;
     public bool FollowPlayerRotation { get; set; } = true;
     public bool LockingToPlayer { get; set; } = false;
 
-    [SerializeField] private float cameraDistance;
-    [SerializeField] private float zoomModifier;
-    [SerializeField] private float verticalOffset;
-    [SerializeField] private float tiltModifier;
-    [SerializeField] private int interpolationFrameCount = 30;
+    [SerializeField] private float cameraDistance = 23.0f;
+    [SerializeField] private float zoomModifier = 2.0f;
+    [SerializeField] private float verticalOffset = 8.0f;
+    [SerializeField] private float tiltModifier = 0.1f;
+    [SerializeField] private int interpolationFrameCount = 450;
 
     private Vector3 interpolationStartPosition;
     private int elapsedInterpolationFrames = 0;
@@ -85,4 +87,6 @@ public class ThirdPersonCamera : MonoBehaviour
     {
         return PlayerTransform.position - (PlayerTransform.forward * cameraDistance) + new Vector3(0.0f, verticalOffset, 0.0f);
     }
+#endif
 }
+#endif
