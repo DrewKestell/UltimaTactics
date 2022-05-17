@@ -6,7 +6,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-public class MenuBuildOptions
+public class BuildEditorMenu
 {
     private const string buildsName = "Builds";
     private const string headlessServerName = "HeadlessServer";

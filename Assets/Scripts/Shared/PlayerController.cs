@@ -18,8 +18,6 @@ public partial class PlayerController : NetworkBehaviour
     private void Update()
     {
         OnUpdate();
-
-        Debug.Log($"IsServer: {NetworkManager.Singleton.IsServer}, IsClient: {NetworkManager.Singleton.IsClient}, TurnMagnitude: {turnMagnitude.Value}, WalkMagnitude: {walkMagnitude.Value}, IsOwner: {IsOwner}, NetworkObjectId: {NetworkObjectId}, OwnerClientId: {OwnerClientId}");
     }
 
     private void FixedUpdate()
