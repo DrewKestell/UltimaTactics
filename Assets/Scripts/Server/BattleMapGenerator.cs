@@ -6,7 +6,6 @@ using UnityEngine.Assertions;
 public static class BattleMapGenerator
 {
     private const int gameTileSize = 10;
-    private const int renderTilesPerGameTile = 5;
 
     private static readonly GameObject battleMap = GameObject.Find("BattleMap");
     private static readonly GameObject gameTiles = GameObject.Find("GameTiles");
@@ -39,57 +38,27 @@ public static class BattleMapGenerator
 
         // create game tiles
         var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        Object.DestroyImmediate(plane.GetComponent<MeshRenderer>());
         plane.transform.parent = gameTiles.transform;
         plane.name = $"GameTile_{gameTileX}_{gameTileY}";
         plane.transform.localPosition = new Vector3(gameTileX * scaledGameTileSize, 0, gameTileY * scaledGameTileSize);
         plane.transform.localScale = new Vector3(tileScale, 1, tileScale);
 
-        var tileComponent = plane.AddComponent<Tile>();
-
-        // create render tiles
-        Assert.AreEqual(0, scaledGameTileSize % renderTilesPerGameTile);
-        for (var x = 0; x < renderTilesPerGameTile; x++)
-        {
-            for (var y = 0; y < renderTilesPerGameTile; y++)
-            {
-                BuildRenderTile(
-                    (int)plane.transform.localPosition.x,
-                    (int)plane.transform.localPosition.z,
-                    x,
-                    y,
-                    scaledGameTileSize,
-                    tileScale);
-            }
-        }
+        Assert.AreEqual(0, scaledGameTileSize % 2);
+        var meshRenderer = plane.GetComponent<MeshRenderer>();
+        var material = GetMaterialFromTextureMap((int)plane.transform.localPosition.x, (int)plane.transform.localPosition.z, scaledGameTileSize);
+        meshRenderer.sharedMaterial = material;
     }
 
-    private static void BuildRenderTile(int gameTileXPos, int gameTileYPos, int renderTileX, int renderTileY, int scaledGameTileSize, int tileScale)
-    {
-        var scaledRenderTileSize = scaledGameTileSize / renderTilesPerGameTile;
-
-        var renderTileXPos = gameTileXPos + (renderTileX * scaledRenderTileSize);
-        var renderTileYPos = gameTileYPos + (renderTileY * scaledRenderTileSize);
-
-        var color = GetRenderTileColorFromTextureMap(renderTileXPos, renderTileYPos, scaledRenderTileSize);
-        var renderTilePlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        renderTilePlane.transform.parent = renderTiles.transform;
-        renderTilePlane.name = $"RenderTile_{renderTileXPos}_{renderTileYPos}";
-        renderTilePlane.transform.localPosition = new Vector3(renderTileXPos, 0, renderTileYPos);
-        renderTilePlane.transform.localScale = new Vector3(tileScale, 1, tileScale);
-        var meshRenderer = renderTilePlane.GetComponent<MeshRenderer>();
-        meshRenderer.material.SetColor("_Color", color);
-    }
-
-    private static Color GetRenderTileColorFromTextureMap(int renderTileXPos, int renderTileYPos, int scaledRenderTileSize)
+    private static Material GetMaterialFromTextureMap(int tileCenterPosX, int tileCenterPosY, int scaledRenderTileSize)
     {
         var dict = new Dictionary<Color, int>();
-        for (var x = renderTileXPos; x < renderTileXPos + scaledRenderTileSize; x++)
+        for (var x = tileCenterPosX; x < tileCenterPosX + scaledRenderTileSize; x++)
         {
-            for (var y = renderTileYPos; y < renderTileYPos + scaledRenderTileSize; y++)
+            for (var y = tileCenterPosY; y < tileCenterPosY + scaledRenderTileSize; y++)
             {
                 var color = textureMap.GetPixel(x, y);
-
+                Debug.Log(color);
+                Debug.Log($"{x}, {y}");
                 if (dict.ContainsKey(color))
                 {
                     dict[color]++;
@@ -101,6 +70,15 @@ public static class BattleMapGenerator
             }
         }
 
-        return dict.OrderBy(c => c.Value).Last().Key;
+        var last = dict.OrderBy(c => c.Value).Last().Key;
+        Debug.Log(last);
+        if (last.r == 0 && last.g == 0 && last.b == 0)
+        {
+            return materials[1];
+        }
+        else
+        {
+            return materials[0];
+        }
     }
 }
