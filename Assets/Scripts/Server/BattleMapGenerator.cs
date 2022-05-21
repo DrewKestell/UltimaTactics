@@ -9,20 +9,32 @@ public static class BattleMapGenerator
 
     private static readonly GameObject battleMap = GameObject.Find("BattleMap");
     private static readonly GameObject gameTiles = GameObject.Find("GameTiles");
-    private static readonly GameObject renderTiles = GameObject.Find("RenderTiles");
+    private static readonly GameObject textureMapDebug = GameObject.Find("TextureMapDebug");
 
     private static readonly Material[] materials;
-    private static readonly Texture2D textureMap;
+    private static Texture2D textureMap;
 
     static BattleMapGenerator()
     {
         var battleMapComponent = battleMap.GetComponent<BattleMap>();
         materials = battleMapComponent.Materials;
-        textureMap = battleMapComponent.TextureMap;
     }
 
     public static void GenerateBattleMap(Vector2 mapDimensions, int tileScale)
     {
+        while (gameTiles.transform.childCount > 0)
+        {
+            Object.DestroyImmediate(gameTiles.transform.GetChild(0).gameObject);
+        }
+
+        textureMap = TextureGenerator.GenerateTexture(400, 400, 80);
+        TextureScale.Scale(textureMap, 100, 100);
+
+        UnityEditor.AssetDatabase.CreateAsset(textureMap, "Assets/Textures/diffuse.asset");
+
+        var meshRenderer = textureMapDebug.GetComponent<MeshRenderer>();
+        meshRenderer.sharedMaterial.mainTexture = textureMap;
+
         for (var x = 0; x < mapDimensions.x; x++)
         {
             for (var y = 0; y < mapDimensions.y; y++)
@@ -57,8 +69,6 @@ public static class BattleMapGenerator
             for (var y = tileCenterPosY; y < tileCenterPosY + scaledRenderTileSize; y++)
             {
                 var color = textureMap.GetPixel(x, y);
-                Debug.Log(color);
-                Debug.Log($"{x}, {y}");
                 if (dict.ContainsKey(color))
                 {
                     dict[color]++;
@@ -71,7 +81,6 @@ public static class BattleMapGenerator
         }
 
         var last = dict.OrderBy(c => c.Value).Last().Key;
-        Debug.Log(last);
         if (last.r == 0 && last.g == 0 && last.b == 0)
         {
             return materials[1];

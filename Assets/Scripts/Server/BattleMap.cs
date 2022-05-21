@@ -4,7 +4,6 @@ using UnityEngine;
 public class BattleMap : MonoBehaviour
 {
     public Material[] Materials;
-    public Texture2D TextureMap;
 
     [SerializeField] private Vector2 mapDimensions = new(4, 4);
     [SerializeField] private int tileScale = 1;
