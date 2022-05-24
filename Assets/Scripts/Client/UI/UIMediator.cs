@@ -126,7 +126,7 @@ public class UIMediator : MonoBehaviour
 
         var instance = Instantiate(characterListItemPrefab, characterSelectPanel);
         instance.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, yPos);
-        var textComponent = gameObject.GetComponentInChildren<TMP_Text>();
+        var textComponent = instance.GetComponentInChildren<TMP_Text>();
         textComponent.text = character.Name;
         instance.GetComponent<Button>().onClick.AddListener(CharacterListItemOnClick);
     }

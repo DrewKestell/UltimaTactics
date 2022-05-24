@@ -46,7 +46,7 @@ public partial class ConnectionManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void EnterWorldServerRpc(int characterId, ServerRpcParams serverRpcParams = default)
     {
-        //#if SERVER_BUILD
+#if SERVER_BUILD
         // TODO: validate ownership of character to this client accountId
         var character = SqlRepository.Instance.GetCharacter(clientAccountMap[serverRpcParams.Receive.SenderClientId], characterId);
         if (character != null)
