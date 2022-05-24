@@ -2,11 +2,12 @@
 using UnityEngine;
 using Mono.Data.Sqlite;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 public class SqlRepository : MonoBehaviour
 {
 #if SERVER_BUILD
-    const string connectionString = @"URI=file:C:\Repos\UltimaTactics\Assets\Data\data.db"; // TODO: make this a relative path
+    const string connectionString = @"Data Source=C:\Users\Drew\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
     public static SqlRepository Instance;
 
     private void Awake()
@@ -28,40 +29,58 @@ public class SqlRepository : MonoBehaviour
 
         return new SqliteCommand(connection);
     }
+    
+    private int GetLastId(SqliteCommand command)
+    {
+        command.CommandText = "select last_insert_rowid()";
+        var lastRowId64 = (long)command.ExecuteScalar();
 
-    public void InsertAccount(Account account)
+        return (int)lastRowId64;
+    }
+
+    public int InsertAccount(Account account)
     {
         var query = $"INSERT INTO Accounts (Email, HashedPassword) VALUES ('{account.Email}', '{account.HashedPassword}');";
         var command = GetCommand();
         command.CommandText = query;
         command.ExecuteNonQuery();
+
+        return GetLastId(command);
     }
 
-    public void InsertCharacter(Character character)
+    public int InsertCharacter(Character character)
     {
-        var query = $"INSERT INTO Characters (Name, AccountId) VALUES ('{character.Name}', {character.Id});";
+        var query = $"INSERT INTO Characters (Name, AccountId) VALUES ('{character.Name}', {character.AccountId});";
         var command = GetCommand();
         command.CommandText = query;
         command.ExecuteNonQuery();
+
+        return GetLastId(command);
     }
 
-    public IEnumerable<Character> ListAccountCharacters(int accountId)
+    public IEnumerable<Character> ListAccountCharacters(string email)
     {
-        var query = $"SELECT * FROM Characters where AccountId = {accountId};";
-        var command = GetCommand();
-        command.CommandText = query;
-        var reader = command.ExecuteReader();
-
-        var characters = new List<Character>();
-        while (reader.Read())
+        var account = GetAccountByEmail(email);
+        if (account != null)
         {
-            var id = reader.GetInt32(0);
-            var name = reader.GetString(1);
+            var query = $"SELECT * FROM Characters where AccountId = {account.Id};";
+            var command = GetCommand();
+            command.CommandText = query;
+            var reader = command.ExecuteReader();
 
-            characters.Add(new Character(id, name, accountId));
+            var characters = new List<Character>();
+            while (reader.Read())
+            {
+                var id = reader.GetInt32(0);
+                var name = reader.GetString(1);
+
+                characters.Add(new Character(id, name, account.Id));
+            }
+
+            return characters;
         }
 
-        return characters;
+        return null;
     }
 
     public IEnumerable<Skill> ListSkills()
@@ -85,7 +104,7 @@ public class SqlRepository : MonoBehaviour
 
     public Account GetAccountByEmail(string email)
     {
-        var query = $"SELECT * FROM Accounts WHERE Email = {email};";
+        var query = $"SELECT * FROM Accounts WHERE Email = '{email}';";
         var command = GetCommand();
         command.CommandText = query;
         var reader = command.ExecuteReader();
@@ -99,6 +118,17 @@ public class SqlRepository : MonoBehaviour
         }
 
         return null;
+    }
+
+    public int InsertCharacterSkills(CharacterSkills characterSkills)
+    {
+        var serializedSkills = JsonConvert.SerializeObject(characterSkills.Skills);
+        var query = $"INSERT INTO CharacterSkills (Skills, CharacterId) VALUES ('{serializedSkills}', {characterSkills.CharacterId});";
+        var command = GetCommand();
+        command.CommandText = query;
+        command.ExecuteNonQuery();
+
+        return GetLastId(command);
     }
 #endif
 }

@@ -1,18 +1,18 @@
+#if CLIENT_BUILD || UNITY_EDITOR
 using Unity.Netcode;
 using UnityEngine;
-#if CLIENT_BUILD || UNITY_EDITOR
 
-public partial class ConnectionManager : MonoBehaviour
+public partial class ConnectionManager : NetworkBehaviour
 {
 #if CLIENT_BUILD
+    [SerializeField] private UIMediator uiMediator;
 
-    public void ConnectClient()
+    public void ConnectClient(string email, string password)
     {
-        Debug.Log("hello");
         var payload = JsonUtility.ToJson(new ConnectionPayload
         {
-            Email = "TODO",
-            Password = "TODO"
+            Email = email,
+            Password = password
         });
         var payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
 

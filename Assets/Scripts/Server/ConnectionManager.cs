@@ -1,10 +1,14 @@
 #if SERVER_BUILD || UNITY_EDITOR
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public partial class ConnectionManager : MonoBehaviour
+public partial class ConnectionManager : NetworkBehaviour
 {
 #if SERVER_BUILD
+    private readonly Dictionary<ulong, int> clientAccountMap = new();
+
     private void Start()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
@@ -15,21 +19,29 @@ public partial class ConnectionManager : MonoBehaviour
 
     void ApprovalCheck(byte[] connectionData, ulong clientId, NetworkManager.ConnectionApprovedDelegate connectionApprovedCallback)
     {
-        Debug.Log("Approval check");
-
         var payload = System.Text.Encoding.UTF8.GetString(connectionData);
         var connectionPayload = JsonUtility.FromJson<ConnectionPayload>(payload); // https://docs.unity3d.com/2020.2/Documentation/Manual/JSONSerialization.html
+        (bool authResult, int? accountId) = AccountManager.Instance.Authenticate(connectionPayload.Email, connectionPayload.Password);
 
-        var authResult = AccountManager.Instance.Authenticate(connectionPayload.Email, connectionPayload.Password);
+        if (authResult)
+        {
+            connectionApprovedCallback(
+                createPlayerObject: false,
+                playerPrefabHash: null,
+                approved: authResult,
+                position: null,
+                rotation: null);
 
-        Debug.Log($"Email: {connectionPayload.Email} Password: {connectionPayload.Password} AuthResult: {authResult}");
+            clientAccountMap.Add(clientId, accountId.Value);
 
-        connectionApprovedCallback(
-            createPlayerObject: false,
-            playerPrefabHash: null,
-            approved: authResult,
-            position: null,
-            rotation: null);
+            var characters = SqlRepository.Instance.ListAccountCharacters(connectionPayload.Email);
+            var characterListItems = characters.Select(c => new CharacterListItem { Id = c.Id, Name = c.Name }).ToArray();
+            LoadCharacterSelectClientRpc(characterListItems, new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { clientId } } });
+        }
+        else
+        {
+            // TODO
+        }
     }
 
     void ServerStartedHandler()

@@ -1,4 +1,6 @@
 #if SERVER_BUILD || UNITY_EDITOR
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 public class AccountManager : MonoBehaviour
@@ -18,22 +20,25 @@ public class AccountManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public bool Authenticate(string email, string password)
+    public (bool, int?) Authenticate(string email, string password)
     {
         var account = SqlRepository.Instance.GetAccountByEmail(email);
 
         if (account == null)
         {
-            return false;
+            return (false, null);
         }
 
-        return HashPassword(password) == account.HashedPassword;
+        return (HashPassword(password) == account.HashedPassword, account.Id);
     }
 
     public string HashPassword(string password)
     {
-        // TODO: implement proper hashing
-        return password.GetHashCode().ToString();
+        var data = Encoding.ASCII.GetBytes(password);
+        using var sha1 = new SHA1CryptoServiceProvider();
+        var sha1Data = sha1.ComputeHash(data);
+
+        return Encoding.ASCII.GetString(sha1Data);
     }
 #endif
 }
