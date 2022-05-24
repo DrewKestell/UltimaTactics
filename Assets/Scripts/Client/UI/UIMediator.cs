@@ -8,9 +8,6 @@ using UnityEngine.UI;
 
 public class UIMediator : MonoBehaviour
 {
-    // Misc.
-    [SerializeField] private ConnectionManager connectionManager;
-
     // Login Panel
     [SerializeField] private RectTransform loginPanel;
     [SerializeField] private TMP_InputField emailInput;
@@ -44,13 +41,13 @@ public class UIMediator : MonoBehaviour
         var email = emailInput.text;
         var password = passwordInput.text;
 
-        connectionManager.ConnectClient(email, password);
+        ConnectionManager.Instance.ConnectClient(email, password);
     }
 
     public void NewCharacterButtonOnClick()
     {
         // TODO: validate 3 unique skills have been selected
-        connectionManager.RequestCharacterCreationAssetsServerRpc();
+        ConnectionManager.Instance.RequestCharacterCreationAssetsServerRpc();
     }
 
     public void CreateCharacterButtonOnClick()
@@ -62,7 +59,7 @@ public class UIMediator : MonoBehaviour
 
         // TODO: reset form values
 
-        connectionManager.CreateCharacterServerRpc(characterName, skillId1, skillId2, skillId3);
+        ConnectionManager.Instance.CreateCharacterServerRpc(characterName, skillId1, skillId2, skillId3);
     }
 
     public void EnterWorldButtonOnClick()
@@ -71,7 +68,7 @@ public class UIMediator : MonoBehaviour
         // need to do validation here to make sure a character is actually selected
         if (currentlySelectedCharacterId.HasValue)
         {
-            connectionManager.EnterWorldServerRpc(currentlySelectedCharacterId.Value);
+            ConnectionManager.Instance.EnterWorldServerRpc(currentlySelectedCharacterId.Value);
             NetworkManager.Singleton.SceneManager.LoadScene("World", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }

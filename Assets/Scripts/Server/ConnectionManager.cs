@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public partial class ConnectionManager : NetworkBehaviour
 {
@@ -15,6 +16,10 @@ public partial class ConnectionManager : NetworkBehaviour
         NetworkManager.Singleton.OnServerStarted += ServerStartedHandler;
 
         NetworkManager.Singleton.StartServer();
+
+        //NetworkManager.Singleton.SceneManager.VerifySceneBeforeLoading += VerifySceneBeforeLoadingHandler;
+        //NetworkManager.Singleton.SceneManager.LoadScene("World", LoadSceneMode.Single);
+        //SceneManager.LoadScene("World", LoadSceneMode.Additive);
     }
 
     void ApprovalCheck(byte[] connectionData, ulong clientId, NetworkManager.ConnectionApprovedDelegate connectionApprovedCallback)
@@ -47,6 +52,14 @@ public partial class ConnectionManager : NetworkBehaviour
     void ServerStartedHandler()
     {
         Debug.Log("Server started successfully.");
+    }
+
+    bool VerifySceneBeforeLoadingHandler(int sceneIndex, string sceneName, LoadSceneMode loadSceneMode)
+    {
+        Debug.Log($"VerifySceneBeforeLoadingHandler: SceneIndex={sceneIndex} SceneName={sceneName} LoadSceneMode={loadSceneMode}");
+
+        return true;
+        //return loadSceneMode == LoadSceneMode.Additive;
     }
 #endif
 }
