@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -71,6 +72,7 @@ public class UIMediator : MonoBehaviour
         if (currentlySelectedCharacterId.HasValue)
         {
             connectionManager.EnterWorldServerRpc(currentlySelectedCharacterId.Value);
+            NetworkManager.Singleton.SceneManager.LoadScene("World", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
 
@@ -109,6 +111,7 @@ public class UIMediator : MonoBehaviour
     public void CharacterCreationSuccessful(CharacterCreationSuccessfulEvent e)
     {
         AddCharacterListItem(e.Character);
+        characterMap.Add(e.Character.Name, e.Character.Id);
 
         characterCreatePanel.gameObject.SetActive(false);
         characterSelectPanel.gameObject.SetActive(true);

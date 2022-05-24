@@ -39,7 +39,7 @@ public class PubSub : MonoBehaviour
         }
         if (!eventSubscriptions[eventType].ContainsKey(monoBehaviour))
         {
-            Debug.Log($"MonoBehavior {monoBehaviour.name}:{monoBehaviour.GetInstanceID()} subscribed to event type {eventType} at {DateTime.Now}.");
+            Debug.Log($"{monoBehaviour.name}:{monoBehaviour.GetInstanceID()} subscribed to event type {eventType} at {DateTime.Now}.");
             eventSubscriptions[eventType].Add(monoBehaviour, action);
         }
     }
@@ -51,7 +51,7 @@ public class PubSub : MonoBehaviour
         {
             if (eventSubscriptions[eventType].ContainsKey(monoBehaviour))
             {
-                Debug.Log($"MonoBehavior {monoBehaviour.name}:{monoBehaviour.GetInstanceID()} unsubscribed to event type {eventType} at {DateTime.Now}.");
+                Debug.Log($"{monoBehaviour.name}:{monoBehaviour.GetInstanceID()} unsubscribed to event type {eventType} at {DateTime.Now}.");
                 eventSubscriptions[eventType].Remove(monoBehaviour);
             }
         }
@@ -60,7 +60,7 @@ public class PubSub : MonoBehaviour
     public void Publish<T>(MonoBehaviour monoBehaviour, T e) where T : struct, IEvent
     {
         var eventType = typeof(T);
-        Debug.Log($"MonoBehavior {monoBehaviour.name}:{monoBehaviour.GetInstanceID()} published event type {eventType} at {DateTime.Now}.");
+        Debug.Log($"{monoBehaviour.name}:{monoBehaviour.GetInstanceID()} published event type {eventType} at {DateTime.Now}.");
 
         if (!eventSubscriptions.ContainsKey(eventType))
         {
