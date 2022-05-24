@@ -33,12 +33,28 @@ public partial class ConnectionManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void CreateCharacterServerRpc(string name, int skillId1, int skillId2, int skillId3, ServerRpcParams serverRpcParams = default)
     {
-        // TODO: validate uniqueness of character name
 #if SERVER_BUILD
+        // TODO: validate uniqueness of character name
+
         var accountId = clientAccountMap[serverRpcParams.Receive.SenderClientId];
         var characterListItem = CharacterGenerator.CreateCharacter(accountId, name, skillId1, skillId2, skillId3);
 
         CharacterCreationSuccessfulClientRpc(characterListItem, ReturnToSameClientParams(serverRpcParams));
+#endif
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void EnterWorldServerRpc(int characterId, ServerRpcParams serverRpcParams = default)
+    {
+        //#if SERVER_BUILD
+        // TODO: validate ownership of character to this client accountId
+        var character = SqlRepository.Instance.GetCharacter(clientAccountMap[serverRpcParams.Receive.SenderClientId], characterId);
+        if (character != null)
+        {
+            // transition client scene
+            // instantiate player prefab
+            // etc
+        }
 #endif
     }
 

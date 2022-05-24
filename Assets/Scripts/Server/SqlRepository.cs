@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 public class SqlRepository : MonoBehaviour
 {
-#if SERVER_BUILD
+//#if SERVER_BUILD
     const string connectionString = @"Data Source=C:\Users\Drew\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
     public static SqlRepository Instance;
 
@@ -129,6 +129,23 @@ public class SqlRepository : MonoBehaviour
         command.ExecuteNonQuery();
 
         return GetLastId(command);
+    }
+
+    public Character GetCharacter(int accountId, int characterId)
+    {
+        var query = $"SELECT * FROM Characters WHERE Id = {characterId} and AccountId = {accountId};";
+        var command = GetCommand();
+        command.CommandText = query;
+        var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            var name = reader.GetString(1);
+
+            return new Character(characterId, name, accountId);
+        }
+
+        return null;
     }
 #endif
 }

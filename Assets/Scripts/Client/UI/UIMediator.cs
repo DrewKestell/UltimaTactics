@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIMediator : MonoBehaviour
 {
@@ -25,7 +26,9 @@ public class UIMediator : MonoBehaviour
     [SerializeField] private TMP_Dropdown skillDropdown2;
     [SerializeField] private TMP_Dropdown skillDropdown3;
 
-    private Dictionary<string, int> skillMap;
+    private Dictionary<string, int> skillMap = new();
+    private Dictionary<string, int> characterMap = new();
+    private int? currentlySelectedCharacterId;
 
 #if CLIENT_BUILD
     public void Start()
@@ -61,8 +64,27 @@ public class UIMediator : MonoBehaviour
         connectionManager.CreateCharacterServerRpc(characterName, skillId1, skillId2, skillId3);
     }
 
+    public void EnterWorldButtonOnClick()
+    {
+        // TODO: the UI currently deselects the character list item if you click elsewhere,
+        // need to do validation here to make sure a character is actually selected
+        if (currentlySelectedCharacterId.HasValue)
+        {
+            connectionManager.EnterWorldServerRpc(currentlySelectedCharacterId.Value);
+        }
+    }
+
+    public void CharacterListItemOnClick()
+    {
+        var button = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+        var buttonText = button.GetComponentInChildren<TMP_Text>();
+        currentlySelectedCharacterId = characterMap[buttonText.text];
+    }
+
     public void LoadCharacterSelect(LoginSuccessfulEvent e)
     {
+        characterMap = e.Characters.ToDictionary(s => s.Name, s => s.Id);
+
         foreach (var character in e.Characters)
         {
             AddCharacterListItem(character);
@@ -102,10 +124,11 @@ public class UIMediator : MonoBehaviour
             yPos = -30 + (characterCount * -40);
         }
 
-        var gameObject = Instantiate(characterListItemPrefab, characterSelectPanel);
-        gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, yPos);
+        var instance = Instantiate(characterListItemPrefab, characterSelectPanel);
+        instance.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, yPos);
         var textComponent = gameObject.GetComponentInChildren<TMP_Text>();
         textComponent.text = character.Name;
+        instance.GetComponent<Button>().onClick.AddListener(CharacterListItemOnClick);
     }
 #endif
 }
