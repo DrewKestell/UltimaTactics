@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public partial class ConnectionManager : NetworkBehaviour
 {
+    [SerializeField] private GameObject playerPrefab;
+
 #if SERVER_BUILD
     private readonly Dictionary<ulong, int> clientAccountMap = new();
 
@@ -19,7 +21,7 @@ public partial class ConnectionManager : NetworkBehaviour
 
         //NetworkManager.Singleton.SceneManager.VerifySceneBeforeLoading += VerifySceneBeforeLoadingHandler;
         //NetworkManager.Singleton.SceneManager.LoadScene("World", LoadSceneMode.Single);
-        //SceneManager.LoadScene("World", LoadSceneMode.Additive);
+        SceneManager.LoadScene("World", LoadSceneMode.Single);
     }
 
     void ApprovalCheck(byte[] connectionData, ulong clientId, NetworkManager.ConnectionApprovedDelegate connectionApprovedCallback)

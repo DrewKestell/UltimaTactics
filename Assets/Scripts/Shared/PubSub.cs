@@ -108,3 +108,7 @@ public struct CharacterCreationSuccessfulEvent : IEvent
 
     public CharacterListItem Character;
 }
+
+public struct EnterWorldSuccessfulEvent : IEvent
+{
+}

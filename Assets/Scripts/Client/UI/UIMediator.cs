@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIMediator : MonoBehaviour
@@ -34,6 +35,7 @@ public class UIMediator : MonoBehaviour
         PubSub.Instance.Subscribe<LoginSuccessfulEvent>(this, LoadCharacterSelect);
         PubSub.Instance.Subscribe<ReceivedCharacterCreationAssetsEvent>(this, LoadCharacterCreation);
         PubSub.Instance.Subscribe<CharacterCreationSuccessfulEvent>(this, CharacterCreationSuccessful);
+        PubSub.Instance.Subscribe<EnterWorldSuccessfulEvent>(this, EnterWorldSuccessful);
     }
 
     public void LoginButtonOnClick()
@@ -68,8 +70,9 @@ public class UIMediator : MonoBehaviour
         // need to do validation here to make sure a character is actually selected
         if (currentlySelectedCharacterId.HasValue)
         {
+            // TODO: need a more complex handshake here. Client requests to enter world, server returns success. then client requests player object. and server spawns.
+            SceneManager.LoadScene("World", LoadSceneMode.Single);
             ConnectionManager.Instance.EnterWorldServerRpc(currentlySelectedCharacterId.Value);
-            NetworkManager.Singleton.SceneManager.LoadScene("World", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
 
@@ -112,6 +115,11 @@ public class UIMediator : MonoBehaviour
 
         characterCreatePanel.gameObject.SetActive(false);
         characterSelectPanel.gameObject.SetActive(true);
+    }
+
+    public void EnterWorldSuccessful(EnterWorldSuccessfulEvent e)
+    {
+        
     }
 
     private void AddCharacterListItem(CharacterListItem character)

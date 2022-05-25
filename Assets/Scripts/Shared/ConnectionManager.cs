@@ -8,12 +8,6 @@ public partial class ConnectionManager : NetworkBehaviour
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
@@ -51,9 +45,9 @@ public partial class ConnectionManager : NetworkBehaviour
         var character = SqlRepository.Instance.GetCharacter(clientAccountMap[serverRpcParams.Receive.SenderClientId], characterId);
         if (character != null)
         {
-            // transition client scene
-            // instantiate player prefab
-            // etc
+            var instance = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            instance.GetComponent<NetworkObject>().SpawnAsPlayerObject(serverRpcParams.Receive.SenderClientId);
+            EnterWorldSuccessfulClientRpc(ReturnToSameClientParams(serverRpcParams));
         }
 #endif
     }
@@ -78,6 +72,14 @@ public partial class ConnectionManager : NetworkBehaviour
     public void CharacterCreationSuccessfulClientRpc(CharacterListItem character, ClientRpcParams clientRpcParams = default)
     {
         var e = new CharacterCreationSuccessfulEvent(character);
+
+        PubSub.Instance.Publish(this, e);
+    }
+
+    [ClientRpc]
+    public void EnterWorldSuccessfulClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        var e = new EnterWorldSuccessfulEvent();
 
         PubSub.Instance.Publish(this, e);
     }

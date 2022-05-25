@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 public partial class ConnectionManager : NetworkBehaviour
 {
 #if CLIENT_BUILD
-    [SerializeField] private UIMediator uiMediator;
-
     public void ConnectClient(string email, string password)
     {
         var payload = JsonUtility.ToJson(new ConnectionPayload
