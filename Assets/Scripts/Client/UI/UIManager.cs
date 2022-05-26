@@ -1,11 +1,21 @@
+#if CLIENT_BUILD || UNITY_EDITOR
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private RectTransform characterPanel;
-    [SerializeField] private RectTransform inventoryPanel;
-    [SerializeField] private RectTransform skillsPanel;
-    [SerializeField] private RectTransform settingsPanel;
+    private RectTransform characterPanel;
+    private RectTransform inventoryPanel;
+    private RectTransform skillsPanel;
+    private RectTransform settingsPanel;
+
+#if CLIENT_BUILD
+    private void Awake()
+    {
+        characterPanel = transform.GetChild(1).GetComponent<RectTransform>();
+        inventoryPanel = transform.GetChild(2).GetComponent<RectTransform>();
+        skillsPanel = transform.GetChild(3).GetComponent<RectTransform>();
+        settingsPanel = transform.GetChild(4).GetComponent<RectTransform>();
+    }
 
     public void CharacterButtonOnClick()
     {
@@ -50,4 +60,6 @@ public class UIManager : MonoBehaviour
     {
         settingsPanel.gameObject.SetActive(false);
     }
+#endif
 }
+#endif

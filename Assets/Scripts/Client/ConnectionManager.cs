@@ -22,7 +22,7 @@ public partial class ConnectionManager : NetworkBehaviour
     public override void OnDestroy()
     {
         base.OnDestroy();
-        PubSub.Instance.Unsubscribe<EnterWorldSuccessfulEvent>(this);
+        //PubSub.Instance.Unsubscribe<EnterWorldSuccessfulEvent>(this);
     }
 
     public void ConnectClient(string email, string password)

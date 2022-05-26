@@ -22,7 +22,7 @@ public class SkillsPanel : MonoBehaviour
         {
             var instance = Instantiate(skillListItemPrefab, scrollableContent);
             instance.transform.GetChild(0).GetComponent<TMP_Text>().text = allSkills[skill.Key].Name;
-            instance.transform.GetChild(1).GetComponent<TMP_Text>().text = skill.Value.ToString(".0");
+            instance.transform.GetChild(1).GetComponent<TMP_Text>().text = skill.Value.ToString("0.0");
         }
 
         scrollableContent.sizeDelta = new Vector2(240, 28 * allSkills.Count);
