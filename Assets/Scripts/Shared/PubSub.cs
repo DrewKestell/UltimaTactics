@@ -6,17 +6,15 @@ public class PubSub : MonoBehaviour
 {
     public static PubSub Instance;
 
-    private readonly Dictionary<Type, Dictionary<MonoBehaviour, Delegate>> eventSubscriptions = new();
+    private readonly Dictionary<Type, Dictionary<int, Delegate>> eventSubscriptions = new();
+
+    public PubSub()
+    {
+        Instance = this;
+    }
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
@@ -35,12 +33,12 @@ public class PubSub : MonoBehaviour
         var eventType = typeof(T);
         if (!eventSubscriptions.ContainsKey(eventType))
         {
-            eventSubscriptions.Add(eventType, new Dictionary<MonoBehaviour, Delegate>());
+            eventSubscriptions.Add(eventType, new Dictionary<int, Delegate>());
         }
-        if (!eventSubscriptions[eventType].ContainsKey(monoBehaviour))
+        if (!eventSubscriptions[eventType].ContainsKey(monoBehaviour.GetInstanceID()))
         {
             Debug.Log($"{monoBehaviour.name}:{monoBehaviour.GetInstanceID()} subscribed to event type {eventType} at {DateTime.Now}.");
-            eventSubscriptions[eventType].Add(monoBehaviour, action);
+            eventSubscriptions[eventType].Add(monoBehaviour.GetInstanceID(), action);
         }
     }
 
@@ -49,10 +47,10 @@ public class PubSub : MonoBehaviour
         var eventType = typeof(T);
         if (eventSubscriptions.ContainsKey(eventType))
         {
-            if (eventSubscriptions[eventType].ContainsKey(monoBehaviour))
+            if (eventSubscriptions[eventType].ContainsKey(monoBehaviour.GetInstanceID()))
             {
                 Debug.Log($"{monoBehaviour.name}:{monoBehaviour.GetInstanceID()} unsubscribed to event type {eventType} at {DateTime.Now}.");
-                eventSubscriptions[eventType].Remove(monoBehaviour);
+                eventSubscriptions[eventType].Remove(monoBehaviour.GetInstanceID());
             }
         }
     }
@@ -64,7 +62,7 @@ public class PubSub : MonoBehaviour
 
         if (!eventSubscriptions.ContainsKey(eventType))
         {
-            eventSubscriptions.Add(eventType, new Dictionary<MonoBehaviour, Delegate>());
+            eventSubscriptions.Add(eventType, new Dictionary<int, Delegate>());
         }
 
         var subs = eventSubscriptions[eventType];
@@ -91,12 +89,6 @@ public struct LoginSuccessfulEvent : IEvent
 
 public struct ReceivedCharacterCreationAssetsEvent : IEvent
 {
-    public ReceivedCharacterCreationAssetsEvent(SkillListItem[] skills)
-    {
-        Skills = skills;
-    }
-
-    public SkillListItem[] Skills { get; }
 }
 
 public struct CharacterCreationSuccessfulEvent : IEvent
@@ -111,4 +103,20 @@ public struct CharacterCreationSuccessfulEvent : IEvent
 
 public struct EnterWorldSuccessfulEvent : IEvent
 {
+    public EnterWorldSuccessfulEvent(int characterId)
+    {
+        CharacterId = characterId;
+    }
+
+    public int CharacterId { get; }
+}
+
+public struct RequestCharacterAssetsSuccessfulEvent : IEvent
+{
+    public RequestCharacterAssetsSuccessfulEvent(CharacterAssets characterAssets)
+    {
+        CharacterAssets = characterAssets;
+    }
+
+    public CharacterAssets CharacterAssets { get; }
 }

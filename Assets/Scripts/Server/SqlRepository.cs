@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 public class SqlRepository : MonoBehaviour
 {
 #if SERVER_BUILD
-    const string connectionString = @"Data Source=C:\Users\Drew\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
+    const string connectionString = @"Data Source=C:\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
     public static SqlRepository Instance;
 
     private void Awake()
@@ -83,25 +83,6 @@ public class SqlRepository : MonoBehaviour
         return null;
     }
 
-    public IEnumerable<Skill> ListSkills()
-    {
-        var query = "SELECT * FROM Skills;";
-        var command = GetCommand();
-        command.CommandText = query;
-        var reader = command.ExecuteReader();
-
-        var skills = new List<Skill>();
-        while (reader.Read())
-        {
-            var id = reader.GetInt32(0);
-            var name = reader.GetString(1);
-
-            skills.Add(new Skill(id, name));
-        }
-
-        return skills;
-    }
-
     public Account GetAccountByEmail(string email)
     {
         var query = $"SELECT * FROM Accounts WHERE Email = '{email}';";
@@ -143,6 +124,24 @@ public class SqlRepository : MonoBehaviour
             var name = reader.GetString(1);
 
             return new Character(characterId, name, accountId);
+        }
+
+        return null;
+    }
+
+    public CharacterSkills GetCharacterSkills(int characterId)
+    {
+        var query = $"SELECT * FROM CharacterSkills WHERE CharacterId = {characterId};";
+        var command = GetCommand();
+        command.CommandText = query;
+        var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            var id = reader.GetInt32(0);
+            var skills = JsonConvert.DeserializeObject<IDictionary<int, float>>(reader.GetString(1));
+
+            return new CharacterSkills(id, skills, characterId);
         }
 
         return null;

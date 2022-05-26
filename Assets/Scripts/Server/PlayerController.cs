@@ -36,8 +36,6 @@ public partial class PlayerController : NetworkBehaviour
             characterController.Move(moveY * Time.deltaTime);
         }
 
-        Debug.Log($"ServerRot: {turnMagnitude.Value * rotateSpeed}");
-
         characterController.Move(GetMoveVector());
         transform.Rotate(0.0f, turnMagnitude.Value * rotateSpeed, 0.0f);
     }

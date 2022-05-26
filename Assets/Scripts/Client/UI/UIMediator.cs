@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIMediator : MonoBehaviour
@@ -35,7 +33,6 @@ public class UIMediator : MonoBehaviour
         PubSub.Instance.Subscribe<LoginSuccessfulEvent>(this, LoadCharacterSelect);
         PubSub.Instance.Subscribe<ReceivedCharacterCreationAssetsEvent>(this, LoadCharacterCreation);
         PubSub.Instance.Subscribe<CharacterCreationSuccessfulEvent>(this, CharacterCreationSuccessful);
-        PubSub.Instance.Subscribe<EnterWorldSuccessfulEvent>(this, EnterWorldSuccessful);
     }
 
     public void LoginButtonOnClick()
@@ -70,8 +67,6 @@ public class UIMediator : MonoBehaviour
         // need to do validation here to make sure a character is actually selected
         if (currentlySelectedCharacterId.HasValue)
         {
-            // TODO: need a more complex handshake here. Client requests to enter world, server returns success. then client requests player object. and server spawns.
-            SceneManager.LoadScene("World", LoadSceneMode.Single);
             ConnectionManager.Instance.EnterWorldServerRpc(currentlySelectedCharacterId.Value);
         }
     }
@@ -98,11 +93,13 @@ public class UIMediator : MonoBehaviour
 
     public void LoadCharacterCreation(ReceivedCharacterCreationAssetsEvent e)
     {
-        skillMap = e.Skills.ToDictionary(s => s.Name, s => s.Id);
+        var allSkills = SkillManager.Instance.AllSkills;
+        skillMap = allSkills.ToDictionary(s => s.Value.Name, s => s.Key);
+        var optionData = allSkills.Select(s => new TMP_Dropdown.OptionData(s.Value.Name)).ToList();
 
-        skillDropdown1.options = e.Skills.Select(s => new TMP_Dropdown.OptionData(s.Name)).ToList();
-        skillDropdown2.options = e.Skills.Select(s => new TMP_Dropdown.OptionData(s.Name)).ToList();
-        skillDropdown3.options = e.Skills.Select(s => new TMP_Dropdown.OptionData(s.Name)).ToList();
+        skillDropdown1.options = optionData;
+        skillDropdown2.options = optionData;
+        skillDropdown3.options = optionData;
 
         characterSelectPanel.gameObject.SetActive(false);
         characterCreatePanel.gameObject.SetActive(true);
@@ -115,11 +112,6 @@ public class UIMediator : MonoBehaviour
 
         characterCreatePanel.gameObject.SetActive(false);
         characterSelectPanel.gameObject.SetActive(true);
-    }
-
-    public void EnterWorldSuccessful(EnterWorldSuccessfulEvent e)
-    {
-        
     }
 
     private void AddCharacterListItem(CharacterListItem character)

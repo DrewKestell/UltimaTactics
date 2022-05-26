@@ -9,14 +9,13 @@ public static class CharacterGenerator
     {
         var character = new Character(0, name, accountId);
         var characterId = SqlRepository.Instance.InsertCharacter(character);
-
-        var skills = SqlRepository.Instance.ListSkills();
+        var allSkills = SkillManager.Instance.AllSkills;
 
         var values = new Dictionary<int, float>();
-        foreach (var skill in skills)
+        foreach (var skill in allSkills)
         {
             float value;
-            if (skill.Id == skillId1 || skill.Id == skillId2 || skill.Id == skillId3)
+            if (skill.Key == skillId1 || skill.Key == skillId2 || skill.Key == skillId3)
             {
                 value = 35.0f;
             }
@@ -24,7 +23,7 @@ public static class CharacterGenerator
             {
                 value = (float)System.Math.Round((float)Random.Range(0, 25.0f), 1);
             }
-            values.Add(skill.Id, value);
+            values.Add(skill.Key, value);
         }
         var characterSkills = new CharacterSkills(0, values, characterId);
         SqlRepository.Instance.InsertCharacterSkills(characterSkills);

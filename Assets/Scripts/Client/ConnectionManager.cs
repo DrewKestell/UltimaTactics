@@ -6,6 +6,25 @@ using UnityEngine.SceneManagement;
 public partial class ConnectionManager : NetworkBehaviour
 {
 #if CLIENT_BUILD
+    private void OnAwake()
+    {
+        PubSub.Instance.Subscribe<EnterWorldSuccessfulEvent>(this, EnterWorldSuccessful);
+    }
+
+    private void Enable()
+    {
+    }
+
+    private void OnStart()
+    {
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        PubSub.Instance.Unsubscribe<EnterWorldSuccessfulEvent>(this);
+    }
+
     public void ConnectClient(string email, string password)
     {
         var payload = JsonUtility.ToJson(new ConnectionPayload
@@ -17,8 +36,13 @@ public partial class ConnectionManager : NetworkBehaviour
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
         NetworkManager.Singleton.StartClient();
+    }
 
-        //NetworkManager.SceneManager.LoadScene("Login", LoadSceneMode.Additive);
+    public void EnterWorldSuccessful(EnterWorldSuccessfulEvent e)
+    {
+        SceneManager.LoadScene("World", LoadSceneMode.Single);
+
+        Instance.RequestCharacterAssetsServerRpc(e.CharacterId);
     }
 #endif
 }

@@ -12,7 +12,15 @@ public partial class ConnectionManager : NetworkBehaviour
 #if SERVER_BUILD
     private readonly Dictionary<ulong, int> clientAccountMap = new();
 
-    private void Start()
+    private void OnAwake()
+    {
+    }
+
+    private void Enable()
+    {
+    }
+
+    private void OnStart()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         NetworkManager.Singleton.OnServerStarted += ServerStartedHandler;

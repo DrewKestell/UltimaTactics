@@ -10,6 +10,18 @@ public partial class ConnectionManager : NetworkBehaviour
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        OnAwake();
+    }
+
+    private void OnEnable()
+    {
+        Enable();
+    }
+
+    private void Start()
+    {
+        OnStart();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -17,10 +29,8 @@ public partial class ConnectionManager : NetworkBehaviour
     {
 #if SERVER_BUILD
         Debug.Log($"{nameof(RequestCharacterCreationAssetsServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
-        var skills = SqlRepository.Instance.ListSkills();
-        var skillListItems = skills.Select(s => new SkillListItem { Id = s.Id, Name = s.Name }).ToArray();
-
-        ReturnCharacterCreationAssetsClientRpc(skillListItems, ReturnToSameClientParams(serverRpcParams));
+        // TODO: any assets that come from the server should be sent back to the client here
+        ReturnCharacterCreationAssetsClientRpc(ReturnToSameClientParams(serverRpcParams));
 #endif
     }
 
@@ -28,6 +38,8 @@ public partial class ConnectionManager : NetworkBehaviour
     public void CreateCharacterServerRpc(string name, int skillId1, int skillId2, int skillId3, ServerRpcParams serverRpcParams = default)
     {
 #if SERVER_BUILD
+        Debug.Log($"{nameof(CreateCharacterServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
+
         // TODO: validate uniqueness of character name
 
         var accountId = clientAccountMap[serverRpcParams.Receive.SenderClientId];
@@ -41,14 +53,37 @@ public partial class ConnectionManager : NetworkBehaviour
     public void EnterWorldServerRpc(int characterId, ServerRpcParams serverRpcParams = default)
     {
 #if SERVER_BUILD
+        Debug.Log($"{nameof(EnterWorldServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
+
         // TODO: validate ownership of character to this client accountId
         var character = SqlRepository.Instance.GetCharacter(clientAccountMap[serverRpcParams.Receive.SenderClientId], characterId);
         if (character != null)
         {
-            var instance = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            instance.GetComponent<NetworkObject>().SpawnAsPlayerObject(serverRpcParams.Receive.SenderClientId);
-            EnterWorldSuccessfulClientRpc(ReturnToSameClientParams(serverRpcParams));
+            EnterWorldSuccessfulClientRpc(characterId, ReturnToSameClientParams(serverRpcParams));
         }
+#endif
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestCharacterAssetsServerRpc(int characterId, ServerRpcParams serverRpcParams = default)
+    {
+#if SERVER_BUILD
+        Debug.Log($"{nameof(RequestCharacterAssetsServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
+
+        // TODO: validate ownership of character to this client accountId
+        var instance = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        instance.GetComponent<NetworkObject>().SpawnAsPlayerObject(serverRpcParams.Receive.SenderClientId);
+
+        var character = SqlRepository.Instance.GetCharacter(clientAccountMap[serverRpcParams.Receive.SenderClientId], characterId);
+        var characterSkills = SqlRepository.Instance.GetCharacterSkills(characterId);
+        var characterAssets = new CharacterAssets
+        {
+            Name = character.Name,
+            SkillIds = characterSkills.Skills.Keys.ToArray(),
+            SkillValues = characterSkills.Skills.Values.ToArray()
+        };
+
+        RequestCharacterAssetsSuccessfulClientRpc(characterAssets);
 #endif
     }
 
@@ -61,9 +96,9 @@ public partial class ConnectionManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void ReturnCharacterCreationAssetsClientRpc(SkillListItem[] skills, ClientRpcParams clientRpcParams = default)
+    public void ReturnCharacterCreationAssetsClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        var e = new ReceivedCharacterCreationAssetsEvent(skills);
+        var e = new ReceivedCharacterCreationAssetsEvent();
 
         PubSub.Instance.Publish(this, e);
     }
@@ -77,9 +112,17 @@ public partial class ConnectionManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void EnterWorldSuccessfulClientRpc(ClientRpcParams clientRpcParams = default)
+    public void EnterWorldSuccessfulClientRpc(int characterId, ClientRpcParams clientRpcParams = default)
     {
-        var e = new EnterWorldSuccessfulEvent();
+        var e = new EnterWorldSuccessfulEvent(characterId);
+
+        PubSub.Instance.Publish(this, e);
+    }
+
+    [ClientRpc]
+    public void RequestCharacterAssetsSuccessfulClientRpc(CharacterAssets characterAssets, ClientRpcParams clientRpcParams = default)
+    {
+        var e = new RequestCharacterAssetsSuccessfulEvent(characterAssets);
 
         PubSub.Instance.Publish(this, e);
     }
