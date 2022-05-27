@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -6,17 +8,14 @@ public partial class ConnectionManager : NetworkBehaviour
 {
     public static ConnectionManager Instance;
 
+    private Dictionary<ulong, GameObject> clientPlayerMap = new();
+
     private void Awake()
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
         OnAwake();
-    }
-
-    private void OnEnable()
-    {
-        Enable();
     }
 
     private void Start()
@@ -70,18 +69,28 @@ public partial class ConnectionManager : NetworkBehaviour
 #if SERVER_BUILD
         Debug.Log($"{nameof(RequestCharacterAssetsServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
 
+        var clientId = serverRpcParams.Receive.SenderClientId;
         // TODO: validate ownership of character to this client accountId
         var instance = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        instance.GetComponent<NetworkObject>().SpawnAsPlayerObject(serverRpcParams.Receive.SenderClientId);
+        instance.name = $"Player_{clientId}";
+        clientPlayerMap.Add(clientId, instance);
+        instance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
 
-        var character = SqlRepository.Instance.GetCharacter(clientAccountMap[serverRpcParams.Receive.SenderClientId], characterId);
+        var character = SqlRepository.Instance.GetCharacter(clientAccountMap[clientId], characterId);
         var characterSkills = SqlRepository.Instance.GetCharacterSkills(characterId);
+
+        var inventoryInstance = Instantiate(inventoryPrefab, instance.transform);
+
         var characterAssets = new CharacterAssets
         {
             Name = character.Name,
             SkillIds = characterSkills.Skills.Keys.ToArray(),
-            SkillValues = characterSkills.Skills.Values.ToArray()
+            SkillValues = characterSkills.Skills.Values.ToArray(),
+            Inventory = inventoryInstance.GetComponent<Inventory>()
         };
+
+        Debug.Log(characterAssets.Inventory);
+        Debug.Log(characterAssets.Inventory.ChestItem);
 
         RequestCharacterAssetsSuccessfulClientRpc(characterAssets);
 #endif

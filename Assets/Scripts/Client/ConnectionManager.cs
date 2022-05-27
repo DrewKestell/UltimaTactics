@@ -11,10 +11,6 @@ public partial class ConnectionManager : NetworkBehaviour
         PubSub.Instance.Subscribe<EnterWorldSuccessfulEvent>(this, EnterWorldSuccessful);
     }
 
-    private void Enable()
-    {
-    }
-
     private void OnStart()
     {
     }
@@ -22,7 +18,7 @@ public partial class ConnectionManager : NetworkBehaviour
     public override void OnDestroy()
     {
         base.OnDestroy();
-        //PubSub.Instance.Unsubscribe<EnterWorldSuccessfulEvent>(this);
+        PubSub.Instance.Unsubscribe<EnterWorldSuccessfulEvent>(this);
     }
 
     public void ConnectClient(string email, string password)

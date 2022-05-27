@@ -16,10 +16,6 @@ public partial class ConnectionManager : NetworkBehaviour
     {
     }
 
-    private void Enable()
-    {
-    }
-
     private void OnStart()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
@@ -27,8 +23,6 @@ public partial class ConnectionManager : NetworkBehaviour
 
         NetworkManager.Singleton.StartServer();
 
-        //NetworkManager.Singleton.SceneManager.VerifySceneBeforeLoading += VerifySceneBeforeLoadingHandler;
-        //NetworkManager.Singleton.SceneManager.LoadScene("World", LoadSceneMode.Single);
         SceneManager.LoadScene("World", LoadSceneMode.Single);
     }
 
