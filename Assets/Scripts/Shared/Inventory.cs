@@ -1,10 +1,8 @@
-using Unity.Netcode;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class Inventory : NetworkBehaviour
+public class Inventory : MonoBehaviour
 {
-    public Item ChestItem = new();
-    public Item LegsItem = new();
-    public Item FeetItem = new();
-    public Item HeadItem = new();
-    public Item[] BackpackItems = new();
+    public int Test;
 }

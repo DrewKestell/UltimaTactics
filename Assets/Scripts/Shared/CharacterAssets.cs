@@ -26,14 +26,11 @@ public class CharacterAssets : INetworkSerializable
             return skills;
         }
     }
-
-    public Inventory Inventory;
     
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref Name);
         serializer.SerializeValue(ref SkillIds);
         serializer.SerializeValue(ref SkillValues);
-        Inventory.NetworkSerialize(serializer);
     }
 }

@@ -8,9 +8,45 @@ using UnityEngine.SceneManagement;
 public partial class ConnectionManager : NetworkBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject inventoryPrefab;
+    [SerializeField] private GameObject testPrefab;
 
 #if SERVER_BUILD
-    private readonly Dictionary<ulong, int> clientAccountMap = new();
+    private readonly Dictionary<ulong, int> clientAccountMap = new(); // TODO: put this on Play prefab?
+    private readonly Dictionary<ulong, bool> clientInGameMap = new(); // TODO: put this on Play prefab?
+
+    void OnGUI()
+    {
+        GUILayout.BeginArea(new Rect(10, 10, 300, 300));
+
+        StartButtons();
+
+        GUILayout.EndArea();
+    }
+
+    static void StartButtons()
+    {
+        if (GUILayout.Button("ShowParent"))
+        {
+            var clientId = clientPlayerMap.First().Key;
+            testObj1.GetComponent<NetworkObject>().NetworkShow(clientId);
+        }
+        if (GUILayout.Button("ShowChild"))
+        {
+            var clientId = clientPlayerMap.First().Key;
+            testObj2.GetComponent<NetworkObject>().NetworkShow(clientId);
+        }
+        if (GUILayout.Button("HideParent"))
+        {
+            var clientId = clientPlayerMap.First().Key;
+            testObj1.GetComponent<NetworkObject>().NetworkHide(clientId);
+        }
+        if (GUILayout.Button("HideChild"))
+        {
+            var clientId = clientPlayerMap.First().Key;
+            testObj2.GetComponent<NetworkObject>().NetworkHide(clientId);
+        }
+    }
 
     private void OnAwake()
     {
