@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 
 public struct ItemModifierValue : INetworkSerializable

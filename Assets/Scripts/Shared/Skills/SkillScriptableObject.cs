@@ -5,9 +5,4 @@ public class SkillScriptableObject : ScriptableObject
 {
     public SkillName Name;
     public bool Activatable;
-
-    public override string ToString()
-    {
-        return $"Name={Name} Activatable={Activatable}";
-    }
 }

@@ -1,6 +1,5 @@
 #if CLIENT_BUILD || UNITY_EDITOR
 using Unity.Netcode;
-using UnityEngine;
 using UnityEngine.InputSystem;
 
 public partial class Player : NetworkBehaviour
@@ -10,9 +9,9 @@ public partial class Player : NetworkBehaviour
     {
         if (!IsLocalPlayer)
         {
-            //Destroy(gameObject.GetComponent<CharacterController>());
-            //Destroy(gameObject.GetComponent<PlayerController>());
-            Destroy(gameObject.GetComponent<PlayerInput>());
+            // Player objects get spawned on all clients, but each client should only control their own Local Player object,
+            // so we disable the PlayerInput component on all non-local players.
+            gameObject.GetComponent<PlayerInput>().enabled = false;
         }
     }
 #endif

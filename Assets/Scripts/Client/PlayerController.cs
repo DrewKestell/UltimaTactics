@@ -5,13 +5,6 @@ using UnityEngine.InputSystem;
 
 public partial class PlayerController : NetworkBehaviour
 {
-    // Client-only serialized fields, also accessible in editor.
-
-    // Client-only methods and unserialized data.
-    // We don't use the || UNITY_EDITOR
-    // exception here, to ensure we don't conflict with the
-    // server file's method definitions.
-
 #if CLIENT_BUILD
     private Animator animator;
     private ThirdPersonCamera thirdPersonCamera;
@@ -27,9 +20,14 @@ public partial class PlayerController : NetworkBehaviour
     {
         animator = GetComponent<Animator>();
 
-        if (IsLocalPlayer)
+        var camComponent = GameObject.Find("ThirdPersonCamera").GetComponent<ThirdPersonCamera>();
+        if (!IsLocalPlayer)
         {
-            thirdPersonCamera = GameObject.Find("ThirdPersonCamera").GetComponent<ThirdPersonCamera>();
+            camComponent.enabled = false;
+        }
+        else
+        {
+            thirdPersonCamera = camComponent;
             thirdPersonCamera.PlayerTransform = transform;
         }
     }

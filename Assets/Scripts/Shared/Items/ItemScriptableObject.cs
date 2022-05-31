@@ -16,9 +16,4 @@ public class ItemScriptableObject : ScriptableObject
     public Texture2D InventorySprite;
     public SkinnedMeshRenderer WorldMesh;
     public Texture2D WorldTexture;
-
-    public override string ToString()
-    {
-        return $"Name={Name} InventorySprite={InventorySprite} WorldMesh={WorldMesh} WorldTexture={WorldTexture}";
-    }
 }
