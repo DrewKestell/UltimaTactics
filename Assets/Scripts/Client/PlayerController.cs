@@ -26,8 +26,12 @@ public partial class PlayerController : NetworkBehaviour
     private void OnStartup()
     {
         animator = GetComponent<Animator>();
-        thirdPersonCamera = GameObject.Find("ThirdPersonCamera").GetComponent<ThirdPersonCamera>();
-        thirdPersonCamera.PlayerTransform = transform;
+
+        if (IsLocalPlayer)
+        {
+            thirdPersonCamera = GameObject.Find("ThirdPersonCamera").GetComponent<ThirdPersonCamera>();
+            thirdPersonCamera.PlayerTransform = transform;
+        }
     }
 
     private void OnUpdate()
@@ -65,7 +69,7 @@ public partial class PlayerController : NetworkBehaviour
     
     private void OnCameraZoom(InputValue inputValue)
     {
-        thirdPersonCamera.Zoom(inputValue.Get<Vector2>().normalized.y);
+        thirdPersonCamera?.Zoom(inputValue.Get<Vector2>().normalized.y);
     }
 
     private void OnLeftClick(InputValue inputValue)
@@ -94,16 +98,17 @@ public partial class PlayerController : NetworkBehaviour
             turnMagnitude.Value = deltaX;
 
             var deltaY = value.y;
-            thirdPersonCamera.Tilt(deltaY);
+            thirdPersonCamera?.Tilt(deltaY);
 
-            thirdPersonCamera.FollowPlayerRotation = true;
+            if (thirdPersonCamera != null)
+                thirdPersonCamera.FollowPlayerRotation = true;
         }
 
         // left-click + drag -> rotate camera around player without rotating player
         else if (leftClickHeld)
         {
             var value = inputValue.Get<Vector2>();
-            thirdPersonCamera.UpdateOrbitPosition(value);
+            thirdPersonCamera?.UpdateOrbitPosition(value);
         }
     }
 
@@ -119,15 +124,16 @@ public partial class PlayerController : NetworkBehaviour
             animator.SetBool("IsMoving", true);
             animator.SetFloat("Speed", walkMagnitude.Value, 0.1f, Time.deltaTime);
 
-            if (!thirdPersonCamera.FollowPlayerRotation)
+            if (thirdPersonCamera != null && !thirdPersonCamera.FollowPlayerRotation)
             {
                 if (leftClickHeld)
                 {
-                    thirdPersonCamera.transform.position = thirdPersonCamera.transform.position + GetMoveVector();
+                    if (thirdPersonCamera != null)
+                        thirdPersonCamera.transform.position = thirdPersonCamera.transform.position + GetMoveVector();
                 }
                 else
                 {
-                    if (!thirdPersonCamera.LockingToPlayer)
+                    if (thirdPersonCamera != null && !thirdPersonCamera.LockingToPlayer)
                     {
                         thirdPersonCamera.LockToPlayer();
                     }

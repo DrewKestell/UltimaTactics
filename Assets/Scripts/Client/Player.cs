@@ -10,8 +10,8 @@ public partial class Player : NetworkBehaviour
     {
         if (!IsLocalPlayer)
         {
-            Destroy(gameObject.GetComponent<CharacterController>());
-            Destroy(gameObject.GetComponent<PlayerController>());
+            //Destroy(gameObject.GetComponent<CharacterController>());
+            //Destroy(gameObject.GetComponent<PlayerController>());
             Destroy(gameObject.GetComponent<PlayerInput>());
         }
     }
