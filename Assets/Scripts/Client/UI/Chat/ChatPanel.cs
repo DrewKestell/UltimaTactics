@@ -6,6 +6,11 @@ public class ChatPanel : MonoBehaviour
 
     private void Awake()
     {
-       // TODO: pubsub
+        PubSub.Instance.Subscribe<ChatMessageEvent>(this, HandleChatMessage);
+    }
+
+    public void HandleChatMessage(ChatMessageEvent e)
+    {
+
     }
 }

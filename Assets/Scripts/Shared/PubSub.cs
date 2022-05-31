@@ -140,3 +140,19 @@ public struct SkillChangedEvent : IEvent
 
     public float NewValue { get; }
 }
+
+public struct ChatMessageEvent : IEvent
+{
+    public ChatMessageEvent(string message, ChatMessageType type, string author)
+    {
+        Message = message;
+        Type = type;
+        Author = author;
+    }
+
+    public string Message { get; }
+
+    public ChatMessageType Type { get; }
+
+    public string Author { get; }
+}

@@ -155,6 +155,12 @@ public partial class ConnectionManager : NetworkBehaviour
         PubSub.Instance.Publish(this, e);
     }
 
+    [ClientRpc]
+    public void ChatMessageClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        
+    }
+
     private ClientRpcParams ReturnToSameClientParams(ServerRpcParams serverRpcParams)
     {
         return new ClientRpcParams
