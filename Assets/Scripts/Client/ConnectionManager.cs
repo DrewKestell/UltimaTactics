@@ -38,7 +38,7 @@ public partial class ConnectionManager : NetworkBehaviour
     {
         SceneManager.LoadScene("World", LoadSceneMode.Single);
 
-        Instance.RequestCharacterAssetsServerRpc(e.CharacterId);
+        Instance.CreatePlayerServerRpc(e.CharacterId);
     }
 #endif
 }

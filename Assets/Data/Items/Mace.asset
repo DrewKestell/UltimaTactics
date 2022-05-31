@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffe9eb3416b5d5b428f522e02eaea653, type: 3}
   m_Name: Mace
   m_EditorClassIdentifier: 
-  Name: mace
-  DamageMin: 10
-  DamageMax: 13
-  Speed: 3
+  Name: 0
+  Type: 1
+  EquipSlot: 0
+  Consumable: 0
+  Placeable: 0
+  Stackable: 0
+  Usable: 0
   InventorySprite: {fileID: 2800000, guid: 172774604c1bee84185a69041576525b, type: 3}
+  WorldMesh: {fileID: 0}
+  WorldTexture: {fileID: 0}

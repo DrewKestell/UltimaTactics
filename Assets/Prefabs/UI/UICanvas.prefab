@@ -237,7 +237,7 @@ GameObject:
   - component: {fileID: 1612432586972673937}
   - component: {fileID: 1612432586972673936}
   m_Layer: 0
-  m_Name: Panel
+  m_Name: SettingsPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1981,7 +1981,7 @@ GameObject:
   - component: {fileID: 1612432587994187176}
   - component: {fileID: 1612432587994187175}
   m_Layer: 0
-  m_Name: Panel
+  m_Name: CharacterPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2597,7 +2597,7 @@ GameObject:
   - component: {fileID: 1612432588588168912}
   - component: {fileID: 1612432588588168914}
   m_Layer: 0
-  m_Name: Panel
+  m_Name: SkillsPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3117,7 +3117,7 @@ GameObject:
   - component: {fileID: 1612432588803408588}
   - component: {fileID: 4672795894779336662}
   m_Layer: 0
-  m_Name: Panel
+  m_Name: InventoryPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

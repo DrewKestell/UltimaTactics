@@ -1,5 +1,6 @@
 #if CLIENT_BUILD || UNITY_EDITOR
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -23,7 +24,7 @@ public class UIMediator : MonoBehaviour
     [SerializeField] private TMP_Dropdown skillDropdown2;
     [SerializeField] private TMP_Dropdown skillDropdown3;
 
-    private Dictionary<string, int> skillMap = new();
+    private Dictionary<string, SkillName> skillMap = new();
     private Dictionary<string, int> characterMap = new();
     private int? currentlySelectedCharacterId;
 
@@ -93,9 +94,9 @@ public class UIMediator : MonoBehaviour
 
     public void LoadCharacterCreation(ReceivedCharacterCreationAssetsEvent e)
     {
-        var allSkills = SkillManager.Instance.AllSkills;
-        skillMap = allSkills.ToDictionary(s => s.Value.Name, s => s.Key);
-        var optionData = allSkills.Select(s => new TMP_Dropdown.OptionData(s.Value.Name)).ToList();
+        var allSkills = SkillsManager.Instance.AllSkills;
+        skillMap = allSkills.ToDictionary(s => s.Key.GetAttribute<DisplayAttribute>().Name, s => s.Key);
+        var optionData = allSkills.Select(s => new TMP_Dropdown.OptionData(s.Key.GetAttribute<DisplayAttribute>().Name)).ToList();
 
         skillDropdown1.options = optionData;
         skillDropdown2.options = optionData;

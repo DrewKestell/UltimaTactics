@@ -1,6 +1,7 @@
 #if SERVER_BUILD || UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,11 +10,13 @@ public partial class ConnectionManager : NetworkBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject inventoryPrefab;
-    [SerializeField] private GameObject testPrefab;
+    [SerializeField] private GameObject skillsPrefab;
+
+    [SerializeField] private GameObject testNetworkObject;
 
 #if SERVER_BUILD
-    private readonly Dictionary<ulong, int> clientAccountMap = new(); // TODO: put this on Play prefab?
-    private readonly Dictionary<ulong, bool> clientInGameMap = new(); // TODO: put this on Play prefab?
+    private readonly Dictionary<ulong, int> clientAccountMap = new();
+    private readonly Dictionary<ulong, bool> clientInGameMap = new();
 
     void OnGUI()
     {
@@ -24,27 +27,29 @@ public partial class ConnectionManager : NetworkBehaviour
         GUILayout.EndArea();
     }
 
-    static void StartButtons()
+    void StartButtons()
     {
-        if (GUILayout.Button("ShowParent"))
+        if (GUILayout.Button("Test"))
         {
-            var clientId = clientPlayerMap.First().Key;
-            testObj1.GetComponent<NetworkObject>().NetworkShow(clientId);
-        }
-        if (GUILayout.Button("ShowChild"))
-        {
-            var clientId = clientPlayerMap.First().Key;
-            testObj2.GetComponent<NetworkObject>().NetworkShow(clientId);
-        }
-        if (GUILayout.Button("HideParent"))
-        {
-            var clientId = clientPlayerMap.First().Key;
-            testObj1.GetComponent<NetworkObject>().NetworkHide(clientId);
-        }
-        if (GUILayout.Button("HideChild"))
-        {
-            var clientId = clientPlayerMap.First().Key;
-            testObj2.GetComponent<NetworkObject>().NetworkHide(clientId);
+            var obj = Instantiate(testNetworkObject);
+            obj.GetComponent<TestNetworkBehaviour>().Foo.Value = new SerializableItem
+            {
+                Name = ItemName.Mace,
+                Modifiers = new FixedList128Bytes<ItemModifierValue>
+                {
+                    new ItemModifierValue
+                    {
+                        Modifier = ItemModifier.ColdResist,
+                        Value = 5
+                    },
+                    new ItemModifierValue
+                    {
+                        Modifier = ItemModifier.DamageIncrease,
+                        Value = 7
+                    },
+                }
+            };
+            obj.GetComponent<NetworkObject>().Spawn();
         }
     }
 
@@ -65,7 +70,7 @@ public partial class ConnectionManager : NetworkBehaviour
     void ApprovalCheck(byte[] connectionData, ulong clientId, NetworkManager.ConnectionApprovedDelegate connectionApprovedCallback)
     {
         var payload = System.Text.Encoding.UTF8.GetString(connectionData);
-        var connectionPayload = JsonUtility.FromJson<ConnectionPayload>(payload); // https://docs.unity3d.com/2020.2/Documentation/Manual/JSONSerialization.html
+        var connectionPayload = JsonUtility.FromJson<ConnectionPayload>(payload);
         (bool authResult, int? accountId) = AccountManager.Instance.Authenticate(connectionPayload.Email, connectionPayload.Password);
 
         if (authResult)
@@ -91,6 +96,7 @@ public partial class ConnectionManager : NetworkBehaviour
 
     void ServerStartedHandler()
     {
+        // TODO: initialize game state
         Debug.Log("Server started successfully.");
     }
 
@@ -99,7 +105,6 @@ public partial class ConnectionManager : NetworkBehaviour
         Debug.Log($"VerifySceneBeforeLoadingHandler: SceneIndex={sceneIndex} SceneName={sceneName} LoadSceneMode={loadSceneMode}");
 
         return true;
-        //return loadSceneMode == LoadSceneMode.Additive;
     }
 #endif
 }

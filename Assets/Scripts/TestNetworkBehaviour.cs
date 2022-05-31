@@ -5,21 +5,10 @@ using UnityEngine;
 
 public class TestNetworkBehaviour : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public NetworkVariable<SerializableItem> Foo;
 
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
-        Debug.Log("OnNetworkSpawn!");
+        
     }
 }

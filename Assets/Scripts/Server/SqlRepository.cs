@@ -40,7 +40,7 @@ public class SqlRepository : MonoBehaviour
 
     public int InsertAccount(Account account)
     {
-        var query = $"INSERT INTO Accounts (Email, HashedPassword) VALUES ('{account.Email}', '{account.HashedPassword}');";
+        var query = $"INSERT INTO Accounts (Email, HashedPassword) VALUES ('{account.Email}', '{account.HashedPassword}')";
         var command = GetCommand();
         command.CommandText = query;
         command.ExecuteNonQuery();
@@ -50,7 +50,7 @@ public class SqlRepository : MonoBehaviour
 
     public int InsertCharacter(Character character)
     {
-        var query = $"INSERT INTO Characters (Name, AccountId) VALUES ('{character.Name}', {character.AccountId});";
+        var query = $"INSERT INTO Characters (Name, AccountId) VALUES ('{character.Name}', {character.AccountId})";
         var command = GetCommand();
         command.CommandText = query;
         command.ExecuteNonQuery();
@@ -63,7 +63,7 @@ public class SqlRepository : MonoBehaviour
         var account = GetAccountByEmail(email);
         if (account != null)
         {
-            var query = $"SELECT * FROM Characters where AccountId = {account.Id};";
+            var query = $"SELECT * FROM Characters where AccountId = {account.Id}";
             var command = GetCommand();
             command.CommandText = query;
             var reader = command.ExecuteReader();
@@ -85,7 +85,7 @@ public class SqlRepository : MonoBehaviour
 
     public Account GetAccountByEmail(string email)
     {
-        var query = $"SELECT * FROM Accounts WHERE Email = '{email}';";
+        var query = $"SELECT * FROM Accounts WHERE Email = '{email}'";
         var command = GetCommand();
         command.CommandText = query;
         var reader = command.ExecuteReader();
@@ -101,20 +101,25 @@ public class SqlRepository : MonoBehaviour
         return null;
     }
 
-    public int InsertCharacterSkills(CharacterSkills characterSkills)
+    public void InsertCharacterSkills(string skillsJson, int characterId)
     {
-        var serializedSkills = JsonConvert.SerializeObject(characterSkills.Skills);
-        var query = $"INSERT INTO CharacterSkills (Skills, CharacterId) VALUES ('{serializedSkills}', {characterSkills.CharacterId});";
+        var query = $"INSERT INTO CharacterSkills (Skills, CharacterId) VALUES ('{skillsJson}', {characterId})";
         var command = GetCommand();
         command.CommandText = query;
         command.ExecuteNonQuery();
-
-        return GetLastId(command);
     }
 
-    public Character GetCharacter(int accountId, int characterId)
+    public void UpdateCharacterSkills(string skillsJson, int characterId)
     {
-        var query = $"SELECT * FROM Characters WHERE Id = {characterId} and AccountId = {accountId};";
+        var query = $"UPDATE CharacterSkills SET Skills = '{skillsJson}' WHERE CharacterId = {characterId}";
+        var command = GetCommand();
+        command.CommandText = query;
+        command.ExecuteNonQuery();
+    }
+
+    public Character GetCharacter(int characterId)
+    {
+        var query = $"SELECT * FROM Characters WHERE Id = {characterId}";
         var command = GetCommand();
         command.CommandText = query;
         var reader = command.ExecuteReader();
@@ -122,6 +127,7 @@ public class SqlRepository : MonoBehaviour
         while (reader.Read())
         {
             var name = reader.GetString(1);
+            var accountId = reader.GetInt32(2);
 
             return new Character(characterId, name, accountId);
         }
@@ -129,19 +135,16 @@ public class SqlRepository : MonoBehaviour
         return null;
     }
 
-    public CharacterSkills GetCharacterSkills(int characterId)
+    public string GetCharacterSkills(int characterId)
     {
-        var query = $"SELECT * FROM CharacterSkills WHERE CharacterId = {characterId};";
+        var query = $"SELECT * FROM CharacterSkills WHERE CharacterId = {characterId}";
         var command = GetCommand();
         command.CommandText = query;
         var reader = command.ExecuteReader();
 
         while (reader.Read())
         {
-            var id = reader.GetInt32(0);
-            var skills = JsonConvert.DeserializeObject<IDictionary<int, float>>(reader.GetString(1));
-
-            return new CharacterSkills(id, skills, characterId);
+            return reader.GetString(1);
         }
 
         return null;

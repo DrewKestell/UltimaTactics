@@ -111,12 +111,32 @@ public struct EnterWorldSuccessfulEvent : IEvent
     public int CharacterId { get; }
 }
 
-public struct RequestCharacterAssetsSuccessfulEvent : IEvent
+public struct CreatePlayerSuccessfulEvent : IEvent
 {
-    public RequestCharacterAssetsSuccessfulEvent(CharacterAssets characterAssets)
+}
+
+public struct InitializeSkillsPanelEvent : IEvent
+{
+    public InitializeSkillsPanelEvent(Dictionary<int, float> skills)
     {
-        CharacterAssets = characterAssets;
+        Skills = skills;
     }
 
-    public CharacterAssets CharacterAssets { get; }
+    public Dictionary<int, float> Skills;
+}
+
+public struct SkillChangedEvent : IEvent
+{
+    public SkillChangedEvent(SkillName skillName, float oldValue, float newValue)
+    {
+        SkillName = skillName;
+        OldValue = oldValue;
+        NewValue = newValue;
+    }
+
+    public SkillName SkillName { get; }
+
+    public float OldValue { get; }
+
+    public float NewValue { get; }
 }

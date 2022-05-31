@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemScriptableObject : ScriptableObject
 {
     // Gameplay
-    public string Name;
+    public ItemName Name;
     public ItemType Type;
     public EquipSlot EquipSlot;
     public bool Consumable;

@@ -76,8 +76,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 7617732534384799867, guid: f1233ab84bd45424ca35eb07628e88f0, type: 3}
   inventoryPrefab: {fileID: 3402266551244733323, guid: 42d72fdc40ff1dc499ca09e6729a2e7d, type: 3}
-  testPrefab: {fileID: 5348305373111679533, guid: 463654797d4a4fc47bd03d390cc0b36a, type: 3}
-  testPrefab2: {fileID: 1079300192310944343, guid: 7ac0865af98f0d44d9f637af9f60f93f, type: 3}
+  skillsPrefab: {fileID: 1068155555879949742, guid: 5293de4ad3cd77047a4d6255ccd7ad0d, type: 3}
+  testNetworkObject: {fileID: 8905840060882668532, guid: b4edc4cc84156ec4ba640aaa6039ea77, type: 3}
 --- !u!114 &3965883226592954132
 MonoBehaviour:
   m_ObjectHideFlags: 0

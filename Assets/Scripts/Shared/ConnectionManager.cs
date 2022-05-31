@@ -8,12 +8,7 @@ public partial class ConnectionManager : NetworkBehaviour
 {
     public static ConnectionManager Instance;
 
-    private static Dictionary<ulong, GameObject> clientPlayerMap = new(); // TODO: don't need this, you can use NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject
-
     private List<NetworkObject> networkObjectToShowOnConnect = new();
-
-    private static GameObject testObj1;
-    private static GameObject testObj2;
 
     private void Awake()
     {
@@ -39,7 +34,7 @@ public partial class ConnectionManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void CreateCharacterServerRpc(string name, int skillId1, int skillId2, int skillId3, ServerRpcParams serverRpcParams = default)
+    public void CreateCharacterServerRpc(string name, SkillName skillName1, SkillName skillName2, SkillName skillName3, ServerRpcParams serverRpcParams = default)
     {
 #if SERVER_BUILD
         Debug.Log($"{nameof(CreateCharacterServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
@@ -47,7 +42,7 @@ public partial class ConnectionManager : NetworkBehaviour
         // TODO: validate uniqueness of character name
 
         var accountId = clientAccountMap[serverRpcParams.Receive.SenderClientId];
-        var characterListItem = CharacterGenerator.CreateCharacter(accountId, name, skillId1, skillId2, skillId3);
+        var characterListItem = CharacterGenerator.CreateCharacter(accountId, name, skillName1, skillName2, skillName3);
 
         CharacterCreationSuccessfulClientRpc(characterListItem, ReturnToSameClientParams(serverRpcParams));
 #endif
@@ -60,7 +55,7 @@ public partial class ConnectionManager : NetworkBehaviour
         Debug.Log($"{nameof(EnterWorldServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
 
         // TODO: validate ownership of character to this client accountId
-        var character = SqlRepository.Instance.GetCharacter(clientAccountMap[serverRpcParams.Receive.SenderClientId], characterId);
+        var character = SqlRepository.Instance.GetCharacter(characterId);
         if (character != null)
         {
             EnterWorldSuccessfulClientRpc(characterId, ReturnToSameClientParams(serverRpcParams));
@@ -69,68 +64,49 @@ public partial class ConnectionManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void RequestCharacterAssetsServerRpc(int characterId, ServerRpcParams serverRpcParams = default)
+    public void CreatePlayerServerRpc(int characterId, ServerRpcParams serverRpcParams = default)
     {
 #if SERVER_BUILD
-        Debug.Log($"{nameof(RequestCharacterAssetsServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
+        Debug.Log($"{nameof(CreatePlayerServerRpc)} invoked. SenderClientId: {serverRpcParams.Receive.SenderClientId}");
 
         var clientId = serverRpcParams.Receive.SenderClientId;
-        clientInGameMap.Add(clientId, true);
+        var accountId = clientAccountMap[clientId];
+
         // TODO: validate ownership of character to this client accountId
-        var instance = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        instance.name = $"Player_{clientId}";
-        clientPlayerMap.Add(clientId, instance);
-        //instance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId); TODO: uncomment me to revert test
-        instance.GetComponent<NetworkObject>().CheckObjectVisibility = (cid) => {
-            return cid == clientId;
-        };
-        instance.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
+        var character = SqlRepository.Instance.GetCharacter(characterId);
 
-        var character = SqlRepository.Instance.GetCharacter(clientAccountMap[clientId], characterId);
-        var characterSkills = SqlRepository.Instance.GetCharacterSkills(characterId);
+        // Instantiate Player object
+        var playerObject = Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        playerObject.GetComponent<PlayerState>().CharacterId.Value = characterId;
+        playerObject.name = $"Player_{clientId}";
+        var playerNetworkObject = playerObject.GetComponent<NetworkObject>();
+        playerNetworkObject.SpawnAsPlayerObject(clientId);
 
-        var inventoryInstance = Instantiate(inventoryPrefab);
-        inventoryInstance.GetComponent<NetworkObject>().CheckObjectVisibility = (cid) => {
-            return cid == clientId;
-        };
-        inventoryInstance.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
+        // Initialize PlayerState component
+        var playerStateComponent = playerObject.GetComponent<PlayerState>();
+        playerStateComponent.AccountId.Value = accountId;
+        playerStateComponent.CharacterId.Value = characterId;
+        playerStateComponent.Name.Value = character.Name;
 
-        var characterAssets = new CharacterAssets
+        // Instantiate Skills object
+        var skillsObject = Instantiate(skillsPrefab);
+        var skillsComponent = skillsObject.GetComponent<Skills>();
+        skillsComponent.Deserialize(characterId);
+        var skillsNetworkObject = skillsObject.GetComponent<NetworkObject>();
+        skillsNetworkObject.CheckObjectVisibility = (cid) => cid == clientId;
+        skillsNetworkObject.SpawnWithOwnership(clientId);
+        skillsNetworkObject.TrySetParent(playerObject);
+
+        // TODO: Instantiate Inventory object
+
+        foreach (var obj in networkObjectToShowOnConnect)
         {
-            Name = character.Name,
-            SkillIds = characterSkills.Skills.Keys.ToArray(),
-            SkillValues = characterSkills.Skills.Values.ToArray()
-        };
+            obj.NetworkShow(clientId);
+        }
 
-        // TEST
+        networkObjectToShowOnConnect.Add(playerNetworkObject);
 
-        var test = Instantiate(testPrefab);
-        var testNetworkObject = test.GetComponent<NetworkObject>();
-        testNetworkObject.CheckObjectVisibility = (cid) => {
-            return clientInGameMap.ContainsKey(cid) && clientInGameMap[cid]; // show to any clients in game
-        };
-        test.GetComponent<NetworkObject>().Spawn();
-        testObj1 = test;
-
-        //var test2 = Instantiate(testPrefab2);
-        //test2.GetComponent<NetworkObject>().CheckObjectVisibility = (cid) =>
-        //{
-        //    return clientInGameMap.ContainsKey(cid) && clientInGameMap[cid]; // show to any clients in game
-        //};
-        //test2.GetComponent<NetworkObject>().Spawn();
-        //test2.transform.SetParent(test.transform);
-        //testObj2 = test2;
-
-        //foreach (var obj in networkObjectToShowOnConnect)
-        //{
-        //    obj.NetworkShow(clientId);
-        //}
-
-        //networkObjectToShowOnConnect.Add(testNetworkObject);
-
-        // END TEST
-
-        RequestCharacterAssetsSuccessfulClientRpc(characterAssets);
+        CreatePlayerSuccessfulClientRpc();
 #endif
     }
 
@@ -167,9 +143,9 @@ public partial class ConnectionManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RequestCharacterAssetsSuccessfulClientRpc(CharacterAssets characterAssets, ClientRpcParams clientRpcParams = default)
+    public void CreatePlayerSuccessfulClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        var e = new RequestCharacterAssetsSuccessfulEvent(characterAssets);
+        var e = new CreatePlayerSuccessfulEvent();
 
         PubSub.Instance.Publish(this, e);
     }
