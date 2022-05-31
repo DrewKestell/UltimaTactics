@@ -58,6 +58,7 @@ public partial class ConnectionManager : NetworkBehaviour
         var character = SqlRepository.Instance.GetCharacter(characterId);
         if (character != null)
         {
+            clientInGameMap.Add(serverRpcParams.Receive.SenderClientId, true);
             EnterWorldSuccessfulClientRpc(characterId, ReturnToSameClientParams(serverRpcParams));
         }
 #endif
@@ -80,7 +81,9 @@ public partial class ConnectionManager : NetworkBehaviour
         playerObject.GetComponent<PlayerState>().CharacterId.Value = characterId;
         playerObject.name = $"Player_{clientId}";
         var playerNetworkObject = playerObject.GetComponent<NetworkObject>();
+        playerNetworkObject.CheckObjectVisibility = (cid) => cid == clientId;
         playerNetworkObject.SpawnAsPlayerObject(clientId);
+        networkObjectToShowOnConnect.Add(playerNetworkObject);
 
         // Initialize PlayerState component
         var playerStateComponent = playerObject.GetComponent<PlayerState>();
@@ -101,10 +104,12 @@ public partial class ConnectionManager : NetworkBehaviour
 
         foreach (var obj in networkObjectToShowOnConnect)
         {
-            obj.NetworkShow(clientId);
+            foreach (var p in clientInGameMap)
+            {
+                if (p.Value && !obj.IsNetworkVisibleTo(p.Key))
+                    obj.NetworkShow(p.Key);
+            }
         }
-
-        networkObjectToShowOnConnect.Add(playerNetworkObject);
 
         CreatePlayerSuccessfulClientRpc();
 #endif
