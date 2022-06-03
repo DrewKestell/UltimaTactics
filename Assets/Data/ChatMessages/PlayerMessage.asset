@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe2a7319f4b0adf4092326250b94e5ee, type: 3}
-  m_Name: WorldSaveEnd
+  m_Name: PlayerMessage
   m_EditorClassIdentifier: 
-  ChatMessage: 1
-  Value: World save has completed successfully in {0}ms.
+  ChatMessage: 4
+  Value: '{0}'

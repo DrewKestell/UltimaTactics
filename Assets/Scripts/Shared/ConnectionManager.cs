@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -115,6 +117,17 @@ public partial class ConnectionManager : NetworkBehaviour
 #endif
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void ChatMessageServerRpc(SerializablePlayerChatMessage playerChatMessage, ServerRpcParams serverRpcParams = default)
+    {
+        var player = NetworkManager.Singleton.ConnectedClients[serverRpcParams.Receive.SenderClientId].PlayerObject;
+        var playerName = player.GetComponent<PlayerState>().Name.Value;
+
+        var chatMessage = new SerializableChatMessage(ChatMessage.PlayerMessage, ChatMessageType.Player, playerName, playerChatMessage.MessageText);
+
+        ChatMessageClientRpc(chatMessage);
+    }
+
     [ClientRpc]
     public void LoadCharacterSelectClientRpc(CharacterListItem[] characters, ClientRpcParams clientRpcParams = default)
     {
@@ -156,9 +169,14 @@ public partial class ConnectionManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void ChatMessageClientRpc(ClientRpcParams clientRpcParams = default)
+    public void ChatMessageClientRpc(SerializableChatMessage chatMessage, ClientRpcParams clientRpcParams = default)
     {
-        
+        var template = ChatMessageManager.Instance.AllChatMessages[chatMessage.Message].Value;
+        var message = string.Format(template, chatMessage.Parameters);
+
+        var e = new ChatMessageEvent(message, chatMessage.Type, chatMessage.Author);
+
+        PubSub.Instance.Publish(this, e);
     }
 
     private ClientRpcParams ReturnToSameClientParams(ServerRpcParams serverRpcParams)

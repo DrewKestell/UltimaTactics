@@ -1,6 +1,8 @@
 #if SERVER_BUILD || UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -31,25 +33,29 @@ public partial class ConnectionManager : NetworkBehaviour
     {
         if (GUILayout.Button("Test"))
         {
-            var obj = Instantiate(testNetworkObject);
-            obj.GetComponent<TestNetworkBehaviour>().Foo.Value = new SerializableItem
-            {
-                Name = ItemName.Mace,
-                Modifiers = new FixedList128Bytes<ItemModifierValue>
-                {
-                    new ItemModifierValue
-                    {
-                        Modifier = ItemModifier.ColdResist,
-                        Value = 5
-                    },
-                    new ItemModifierValue
-                    {
-                        Modifier = ItemModifier.DamageIncrease,
-                        Value = 7
-                    },
-                }
-            };
-            obj.GetComponent<NetworkObject>().Spawn();
+            //var obj = Instantiate(testNetworkObject);
+            //obj.GetComponent<TestNetworkBehaviour>().Foo.Value = new SerializableItem
+            //{
+            //    Name = ItemName.Mace,
+            //    Modifiers = new FixedList128Bytes<ItemModifierValue>
+            //    {
+            //        new ItemModifierValue
+            //        {
+            //            Modifier = ItemModifier.ColdResist,
+            //            Value = 5
+            //        },
+            //        new ItemModifierValue
+            //        {
+            //            Modifier = ItemModifier.DamageIncrease,
+            //            Value = 7
+            //        },
+            //    }
+            //};
+            //obj.GetComponent<NetworkObject>().Spawn();
+
+            //WorldSaver.Instance.SaveWorld();
+            var message = new SerializableChatMessage(ChatMessage.PlayerJoin, ChatMessageType.System, "SYSTEM", "Florbs");
+            ChatMessageClientRpc(message);
         }
     }
 

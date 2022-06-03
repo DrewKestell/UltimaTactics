@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5809,6 +5809,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1525460950}
   m_CullTransparentMesh: 1
+--- !u!1 &1545562830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1545562832}
+  - component: {fileID: 1545562831}
+  m_Layer: 0
+  m_Name: WorldSaver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1545562831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545562830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c48df851654c65c48b24d36ed287b940, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveFrequencyInSeconds: 30
+--- !u!4 &1545562832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545562830}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 573.1935, y: 250.23282, z: 12.134987}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547622955
 GameObject:
   m_ObjectHideFlags: 0
@@ -6836,6 +6881,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6f6c9218e8246534fb0f4b16ff776434, type: 2}
   - {fileID: 11400000, guid: c25262bf59ba9c546be2bee03813fb4b, type: 2}
   - {fileID: 11400000, guid: 78bed2cc418f1f14fae16951599ea22b, type: 2}
+  - {fileID: 11400000, guid: 68d845e490feadb4dbda18e93df5fd0f, type: 2}
 --- !u!4 &1827605180
 Transform:
   m_ObjectHideFlags: 0

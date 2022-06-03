@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public partial class Skills : NetworkBehaviour
+public partial class Skills : WorldSaved
 {
 #if CLIENT_BUILD
     public override void OnNetworkSpawn()

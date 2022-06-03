@@ -3,11 +3,12 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Unity.Netcode;
 
-public partial class Skills : NetworkBehaviour
+public partial class Skills : WorldSaved
 {
 #if SERVER_BUILD
     private int characterId = -1;
-    public void Serialize()
+
+    public override void Serialize()
     {
         if (characterId == -1)
         {
@@ -21,7 +22,7 @@ public partial class Skills : NetworkBehaviour
 
     // TODO: figure out a better way to get CharacterID from the GameObject hierarchy - it's tricky
     // because we need to instantiate, reparent, then spawn, so it moves in the hierarchy and causes problems on the client.
-    public void Deserialize(int characterId)
+    public override void Deserialize(int characterId)
     {
         // Unity JsonUtility does not support dictionaries, so use Newtonsoft for now
         var skillsJson = SqlRepository.Instance.GetCharacterSkills(characterId);

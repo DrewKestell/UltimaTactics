@@ -1,6 +1,6 @@
 using Unity.Netcode;
 
-public partial class Skills : NetworkBehaviour
+public partial class Skills : WorldSaved
 {
     public PrimitiveKeyedNetworkDictionary<int, float> Values;
 

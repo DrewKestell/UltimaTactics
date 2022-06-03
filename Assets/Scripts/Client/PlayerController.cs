@@ -30,6 +30,12 @@ public partial class PlayerController : NetworkBehaviour
             thirdPersonCamera = camComponent;
             thirdPersonCamera.PlayerTransform = transform;
         }
+
+        // TODO: Player and UICanvas are spawned at runtime which makes it difficult to wire up these event listeners through the Unity Editor
+        // as a workaround, wire them up here when the Player object is spawned. UI will already be initialized here.
+        var chatPanel = GameObject.Find("ChatPanel").GetComponent<ChatPanel>();
+        var playerInputComponent = GetComponent<PlayerInput>();
+        playerInputComponent.currentActionMap.FindAction("Enter").performed += chatPanel.OnEnter;
     }
 
     private void OnUpdate()
@@ -55,29 +61,29 @@ public partial class PlayerController : NetworkBehaviour
     }
 
     // Input
-    private void OnTurn(InputValue inputValue)
+    public void OnTurn(InputAction.CallbackContext inputValue)
     {
-        turnMagnitude.Value = inputValue.Get<float>();
+        turnMagnitude.Value = inputValue.ReadValue<float>();
     }
 
-    private void OnWalk(InputValue inputValue)
+    public void OnWalk(InputAction.CallbackContext inputValue)
     {
-        walkMagnitude.Value = inputValue.Get<float>();
-    }
-    
-    private void OnCameraZoom(InputValue inputValue)
-    {
-        thirdPersonCamera?.Zoom(inputValue.Get<Vector2>().normalized.y);
+        walkMagnitude.Value = inputValue.ReadValue<float>();
     }
 
-    private void OnLeftClick(InputValue inputValue)
+    public void OnCameraZoom(InputAction.CallbackContext inputValue)
     {
-        leftClickHeld = inputValue.isPressed;
+        thirdPersonCamera?.Zoom(inputValue.ReadValue<Vector2>().normalized.y);
     }
 
-    private void OnRightClick(InputValue inputValue)
+    public void OnLeftClick(InputAction.CallbackContext inputValue)
     {
-        rightClickHeld = inputValue.isPressed;
+        leftClickHeld = inputValue.ReadValueAsButton();
+    }
+
+    public void OnRightClick(InputAction.CallbackContext inputValue)
+    {
+        rightClickHeld = inputValue.ReadValueAsButton();
 
         if (!rightClickHeld)
         {
@@ -85,12 +91,12 @@ public partial class PlayerController : NetworkBehaviour
         }
     }
 
-    private void OnMoveMouse(InputValue inputValue)
+    public void OnMoveMouse(InputAction.CallbackContext inputValue)
     {
         // right-click + drag -> rotate player and camera
         if (rightClickHeld)
         {
-            var value = inputValue.Get<Vector2>();
+            var value = inputValue.ReadValue<Vector2>();
 
             var deltaX = value.x;
             turnMagnitude.Value = deltaX;
@@ -105,7 +111,7 @@ public partial class PlayerController : NetworkBehaviour
         // left-click + drag -> rotate camera around player without rotating player
         else if (leftClickHeld)
         {
-            var value = inputValue.Get<Vector2>();
+            var value = inputValue.ReadValue<Vector2>();
             thirdPersonCamera?.UpdateOrbitPosition(value);
         }
     }
@@ -138,11 +144,6 @@ public partial class PlayerController : NetworkBehaviour
                 }
             }
         }
-    }
-
-    private void ClientMove()
-    {
-        
     }
 
     private void Attack()
