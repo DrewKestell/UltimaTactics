@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -785,6 +785,10 @@ PrefabInstance:
       propertyPath: testPrefab2
       value: 
       objectReference: {fileID: 1079300192310944343, guid: 7ac0865af98f0d44d9f637af9f60f93f, type: 3}
+    - target: {fileID: 3965883226592954128, guid: a1833340f0f95aa46b13f54a5219a959, type: 3}
+      propertyPath: playerPrefab
+      value: 
+      objectReference: {fileID: 909887997274433534, guid: de7a7784709e537408fffbc412a985bb, type: 3}
     - target: {fileID: 3965883226592954128, guid: a1833340f0f95aa46b13f54a5219a959, type: 3}
       propertyPath: skillsPrefab
       value: 
@@ -6729,7 +6733,7 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 0}
     NetworkPrefabs:
     - Override: 0
-      Prefab: {fileID: 7617732534384799867, guid: f1233ab84bd45424ca35eb07628e88f0, type: 3}
+      Prefab: {fileID: 909887997274433534, guid: de7a7784709e537408fffbc412a985bb, type: 3}
       SourcePrefabToOverride: {fileID: 0}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}

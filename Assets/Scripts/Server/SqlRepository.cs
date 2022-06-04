@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 public class SqlRepository : MonoBehaviour
 {
 #if SERVER_BUILD
-    const string connectionString = @"Data Source=C:\Users\Drew\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
+    const string connectionString = @"Data Source=C:\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
     public static SqlRepository Instance;
 
     private void Awake()
