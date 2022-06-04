@@ -156,3 +156,23 @@ public struct ChatMessageEvent : IEvent
 
     public string Author { get; }
 }
+
+public struct ItemAddedToInventoryEvent : IEvent
+{
+    public ItemAddedToInventoryEvent(int itemId, SerializableItem item)
+    {
+        Item = item;
+    }
+
+    public SerializableItem Item { get; }
+}
+
+public struct ItemRemovedFromInventoryEvent : IEvent
+{
+    public ItemRemovedFromInventoryEvent(int itemId)
+    {
+        ItemId = itemId;
+    }
+
+    public int ItemId { get; }
+}

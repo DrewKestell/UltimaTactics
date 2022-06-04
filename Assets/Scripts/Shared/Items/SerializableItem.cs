@@ -1,10 +1,20 @@
+using System;
+using System.Linq;
 using Unity.Collections;
 using Unity.Netcode;
 
-public struct SerializableItem : INetworkSerializable
+public struct SerializableItem : INetworkSerializable, IEquatable<SerializableItem>
 {
     public ItemName Name;
     public FixedList128Bytes<ItemModifierValue> Modifiers;
+
+    public bool Equals(SerializableItem other)
+    {
+        return 
+            Name == other.Name &&
+            Modifiers.Length == other.Modifiers.Length &&
+            Modifiers.All(m => other.Modifiers.Contains(m));
+    }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {

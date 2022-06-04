@@ -33,29 +33,13 @@ public partial class ConnectionManager : NetworkBehaviour
     {
         if (GUILayout.Button("Test"))
         {
-            //var obj = Instantiate(testNetworkObject);
-            //obj.GetComponent<TestNetworkBehaviour>().Foo.Value = new SerializableItem
-            //{
-            //    Name = ItemName.Mace,
-            //    Modifiers = new FixedList128Bytes<ItemModifierValue>
-            //    {
-            //        new ItemModifierValue
-            //        {
-            //            Modifier = ItemModifier.ColdResist,
-            //            Value = 5
-            //        },
-            //        new ItemModifierValue
-            //        {
-            //            Modifier = ItemModifier.DamageIncrease,
-            //            Value = 7
-            //        },
-            //    }
-            //};
-            //obj.GetComponent<NetworkObject>().Spawn();
-
-            //WorldSaver.Instance.SaveWorld();
-            var message = new SerializableChatMessage(ChatMessage.PlayerJoin, ChatMessageType.System, "SYSTEM", "Florbs");
-            ChatMessageClientRpc(message);
+            var obj = Instantiate(inventoryPrefab);
+            obj.GetComponent<Inventory>().Items.Add(obj.GetInstanceID(), new SerializableItem
+            {
+                Name = ItemName.Belt
+            });
+            var networkObj = obj.GetComponent<NetworkObject>();
+            networkObj.Spawn();
         }
     }
 

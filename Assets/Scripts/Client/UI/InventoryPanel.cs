@@ -1,21 +1,29 @@
 #if CLIENT_BUILD || UNITY_EDITOR
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryPanel : MonoBehaviour
 {
+    [SerializeField] private GameObject inventoryItemPrefab;
 
+    private readonly Dictionary<int, GameObject> itemMap = new();
 
 #if CLIENT_BUILD
     private void Awake()
     {
-        PubSub.Instance.Subscribe<CreatePlayerSuccessfulEvent>(this, InitializeInventoryPanel);
         gameObject.transform.parent.gameObject.SetActive(false);
+
+        PubSub.Instance.Subscribe<ItemAddedToInventoryEvent>(this, HandleItemAdded);
+        PubSub.Instance.Subscribe<ItemRemovedFromInventoryEvent>(this, HandleItemRemoved);
     }
 
-    private void InitializeInventoryPanel(CreatePlayerSuccessfulEvent e)
+    public void HandleItemAdded(ItemAddedToInventoryEvent e)
     {
-        
+    }
+
+    public void HandleItemRemoved(ItemRemovedFromInventoryEvent e)
+    {
+
     }
 #endif
 }

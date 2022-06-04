@@ -1,9 +1,15 @@
+using System;
 using Unity.Netcode;
 
-public struct ItemModifierValue : INetworkSerializable
+public struct ItemModifierValue : INetworkSerializable, IEquatable<ItemModifierValue>
 {
     public ItemModifier Modifier;
     public float Value;
+
+    public bool Equals(ItemModifierValue other)
+    {
+        return Modifier == other.Modifier && Value == other.Value;
+    }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {

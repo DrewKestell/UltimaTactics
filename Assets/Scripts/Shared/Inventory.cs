@@ -1,8 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using Unity.Netcode;
 
-public class Inventory : MonoBehaviour
+public partial class Inventory : NetworkBehaviour
 {
-    public int Test;
+    public PrimitiveKeyedNetworkDictionary<int, SerializableItem> Items;
+
+    private void Awake()
+    {
+        Items = new();
+    }
 }

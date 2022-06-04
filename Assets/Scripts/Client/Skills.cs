@@ -6,6 +6,8 @@ public partial class Skills : WorldSaved
 #if CLIENT_BUILD
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+
         Values.OnDictionaryChanged += Values_OnListChanged;
 
         var e = new InitializeSkillsPanelEvent(Values.ToDictionary());

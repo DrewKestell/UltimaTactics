@@ -788,7 +788,7 @@ PrefabInstance:
     - target: {fileID: 3965883226592954128, guid: a1833340f0f95aa46b13f54a5219a959, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 909887997274433534, guid: de7a7784709e537408fffbc412a985bb, type: 3}
+      objectReference: {fileID: 7727588866342689138, guid: de7a7784709e537408fffbc412a985bb, type: 3}
     - target: {fileID: 3965883226592954128, guid: a1833340f0f95aa46b13f54a5219a959, type: 3}
       propertyPath: skillsPrefab
       value: 
@@ -6733,7 +6733,7 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 0}
     NetworkPrefabs:
     - Override: 0
-      Prefab: {fileID: 909887997274433534, guid: de7a7784709e537408fffbc412a985bb, type: 3}
+      Prefab: {fileID: 7727588866342689138, guid: de7a7784709e537408fffbc412a985bb, type: 3}
       SourcePrefabToOverride: {fileID: 0}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
