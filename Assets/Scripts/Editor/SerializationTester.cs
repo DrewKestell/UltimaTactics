@@ -52,16 +52,29 @@ public class SerializationTester
 
         //Debug.Log(deserializedJson.Length);
 
-        var player = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Player.prefab");
-        var belt = player.transform.GetChild(0);
-        var smr = belt.GetComponent<SkinnedMeshRenderer>();
+        // Copy Mesh and Material from imported model
 
-        var newMesh = Object.Instantiate(smr.sharedMesh);
-        AssetDatabase.CreateAsset(newMesh, "Assets/Meshes/Belt.asset");
+        //var player = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Player.prefab");
+        //var belt = player.transform.GetChild(0);
+        //var smr = belt.GetComponent<SkinnedMeshRenderer>();
 
-        var newMaterial = Object.Instantiate(smr.sharedMaterial);
-        AssetDatabase.CreateAsset(newMaterial, "Assets/Materials/Belt.mat");
+        //var newMesh = Object.Instantiate(smr.sharedMesh);
+        //AssetDatabase.CreateAsset(newMesh, "Assets/Meshes/Belt.asset");
 
-        AssetDatabase.SaveAssets();
+        //var newMaterial = Object.Instantiate(smr.sharedMaterial);
+        //AssetDatabase.CreateAsset(newMaterial, "Assets/Materials/Belt.mat");
+
+        //AssetDatabase.SaveAssets();
+
+        // Test object creation
+        var player = GameObject.Find("Player");
+        var equipmentTemplate = player.transform.GetChild(0);
+        var equipmentObj = Object.Instantiate(equipmentTemplate, player.transform);
+        equipmentObj.name = "Belt";
+        var smr = equipmentObj.GetComponent<SkinnedMeshRenderer>();
+
+        var so1 = AssetDatabase.LoadAssetAtPath("Assets/Data/Items/Belt.asset", typeof(ItemScriptableObject)) as ItemScriptableObject;
+        smr.sharedMesh = so1.Mesh;
+        smr.sharedMaterial = so1.Material;
     }
 }
