@@ -39,17 +39,29 @@ public class SerializationTester
 
         //Debug.Log(deserializedJson);
 
-        var foo = new float[]
-        {
-            1, 3, 5
-        };
+        //var foo = new float[]
+        //{
+        //    1, 3, 5
+        //};
 
-        var json = JsonUtility.ToJson(foo);
+        //var json = JsonUtility.ToJson(foo);
 
-        Debug.Log(json);
+        //Debug.Log(json);
 
-        var deserializedJson = JsonUtility.FromJson<float[]>(json);
+        //var deserializedJson = JsonUtility.FromJson<float[]>(json);
 
-        Debug.Log(deserializedJson.Length);
+        //Debug.Log(deserializedJson.Length);
+
+        var player = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Player.prefab");
+        var belt = player.transform.GetChild(0);
+        var smr = belt.GetComponent<SkinnedMeshRenderer>();
+
+        var newMesh = Object.Instantiate(smr.sharedMesh);
+        AssetDatabase.CreateAsset(newMesh, "Assets/Meshes/Belt.asset");
+
+        var newMaterial = Object.Instantiate(smr.sharedMaterial);
+        AssetDatabase.CreateAsset(newMaterial, "Assets/Materials/Belt.mat");
+
+        AssetDatabase.SaveAssets();
     }
 }

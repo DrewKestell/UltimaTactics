@@ -10,5 +10,8 @@ public enum ItemName
     Maul,
 
     [Display(Name = "Shirt")]
-    Shirt
+    Shirt,
+
+    [Display(Name = "Belt")]
+    Belt
 }

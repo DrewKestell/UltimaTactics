@@ -14,6 +14,6 @@ public class ItemScriptableObject : ScriptableObject
 
     // Visuals
     public Texture2D InventorySprite;
-    public SkinnedMeshRenderer WorldMesh;
-    public Texture2D WorldTexture;
+    public Mesh Mesh;
+    public Material Material;
 }

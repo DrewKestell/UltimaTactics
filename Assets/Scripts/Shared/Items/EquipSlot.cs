@@ -10,5 +10,6 @@ public enum EquipSlot : byte
     Chest,
     Legs,
     Feet,
-    Back
+    Back,
+    Waist
 }

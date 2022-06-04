@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffe9eb3416b5d5b428f522e02eaea653, type: 3}
+  m_Name: Belt
+  m_EditorClassIdentifier: 
+  Name: 3
+  Type: 2
+  EquipSlot: 11
+  Consumable: 0
+  Placeable: 0
+  Stackable: 0
+  Usable: 0
+  InventorySprite: {fileID: 2800000, guid: da09804303305f542a686824630e7269, type: 3}
+  Mesh: {fileID: 4300000, guid: f1757fcf1be40654b82daf2c2b87b73a, type: 2}
+  Material: {fileID: 2100000, guid: 8ae1bd3c6de823649a3d64d19c540735, type: 2}
