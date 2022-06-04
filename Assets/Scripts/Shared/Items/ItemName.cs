@@ -7,5 +7,8 @@ public enum ItemName
     Mace,
 
     [Display(Name = "Maul")]
-    Maul
+    Maul,
+
+    [Display(Name = "Shirt")]
+    Shirt
 }

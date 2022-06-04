@@ -1,6 +1,5 @@
 #if CLIENT_BUILD || UNITY_EDITOR
 using Unity.Netcode;
-using UnityEngine;
 
 public partial class Skills : WorldSaved
 {
