@@ -102,7 +102,14 @@ public partial class ConnectionManager : NetworkBehaviour
         skillsNetworkObject.SpawnWithOwnership(clientId);
         skillsNetworkObject.TrySetParent(playerObject);
 
-        // TODO: Instantiate Inventory object
+        // Instantiate Inventory object
+        var inventoryObject = Instantiate(inventoryPrefab);
+        var inventoryComponent = inventoryObject.GetComponent<Inventory>();
+        inventoryComponent.Deserialize(characterId);
+        var inventoryNetworkObject = inventoryObject.GetComponent<NetworkObject>();
+        inventoryNetworkObject.CheckObjectVisibility = (cid) => cid == clientId;
+        inventoryNetworkObject.SpawnWithOwnership(clientId);
+        inventoryNetworkObject.TrySetParent(playerObject);
 
         foreach (var obj in networkObjectToShowOnConnect)
         {

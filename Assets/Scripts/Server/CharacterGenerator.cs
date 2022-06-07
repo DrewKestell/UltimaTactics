@@ -32,6 +32,15 @@ public static class CharacterGenerator
         var skillsJson = JsonConvert.SerializeObject(dict);
         SqlRepository.Instance.InsertCharacterSkills(skillsJson, characterId);
 
+        // TODO: starting items?
+        var items = new Dictionary<int, SerializableItem>();
+        items.Add(1, new SerializableItem
+        {
+            Name = ItemName.Belt
+        });
+        var itemsJson = JsonConvert.SerializeObject(items);
+        SqlRepository.Instance.InsertCharacterItems(itemsJson, characterId);
+
         return new CharacterListItem { Id = characterId, Name = name };
     }
 #endif

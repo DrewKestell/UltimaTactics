@@ -1,7 +1,7 @@
 #if CLIENT_BUILD || UNITY_EDITOR
 using Unity.Netcode;
 
-public partial class Inventory : NetworkBehaviour
+public partial class Inventory : WorldSaved
 {
 #if CLIENT_BUILD
 

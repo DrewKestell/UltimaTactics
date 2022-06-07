@@ -67,14 +67,29 @@ public class SerializationTester
         //AssetDatabase.SaveAssets();
 
         // Test object creation
-        var player = GameObject.Find("Player");
-        var equipmentTemplate = player.transform.GetChild(0);
-        var equipmentObj = Object.Instantiate(equipmentTemplate, player.transform);
-        equipmentObj.name = "Belt";
-        var smr = equipmentObj.GetComponent<SkinnedMeshRenderer>();
+        //var player = GameObject.Find("Player");
+        //var equipmentTemplate = player.transform.GetChild(0);
+        //var equipmentObj = Object.Instantiate(equipmentTemplate, player.transform);
+        //equipmentObj.name = "Belt";
+        //var smr = equipmentObj.GetComponent<SkinnedMeshRenderer>();
 
-        var so1 = AssetDatabase.LoadAssetAtPath("Assets/Data/Items/Belt.asset", typeof(ItemScriptableObject)) as ItemScriptableObject;
-        smr.sharedMesh = so1.Mesh;
-        smr.sharedMaterial = so1.Material;
+        //var so1 = AssetDatabase.LoadAssetAtPath("Assets/Data/Items/Belt.asset", typeof(ItemScriptableObject)) as ItemScriptableObject;
+        //smr.sharedMesh = so1.Mesh;
+        //smr.sharedMaterial = so1.Material;
+
+        var tooltip = GameObject.Find("Tooltip");
+        var tooltipContainer = GameObject.Find("TooltipContainer");
+
+        var currentScale = Screen.width / (float)1920;
+
+        Debug.Log($"Tooltip position: {tooltip.transform.position}");
+        Debug.Log($"Tooltip container width: {tooltipContainer.GetComponent<RectTransform>().sizeDelta.x}");
+        Debug.Log($"Tooltip container rect: {tooltipContainer.GetComponent<RectTransform>().rect}");
+
+
+        var containerWidth = tooltipContainer.GetComponent<RectTransform>().sizeDelta.x;
+        var newWidth = ((containerWidth / 2) + 30) * currentScale;
+        var newPosition = new Vector2(tooltip.transform.position.x + newWidth, tooltip.transform.position.y);
+        tooltipContainer.transform.position = newPosition;
     }
 }

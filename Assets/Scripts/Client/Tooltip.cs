@@ -7,9 +7,7 @@ public class Tooltip : MonoBehaviour
 
     public void OnPointerEnter(BaseEventData eventData)
     {
-        Debug.Log(transform.position);
-        Debug.Log(GetComponent<RectTransform>().anchoredPosition);
-        TooltipManager.Instance.SetText(Text);
+        TooltipManager.Instance.SetText(transform.position, Text);
         TooltipManager.Instance.Show();
     }
 

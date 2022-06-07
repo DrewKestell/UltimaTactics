@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 public class SqlRepository : MonoBehaviour
 {
 #if SERVER_BUILD
-    const string connectionString = @"Data Source=C:\Users\Drew\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
+    const string connectionString = @"Data Source=C:\Repos\UltimaTactics\Assets\Data\data.db;Version=3;New=False;Foreign Key Constraints=On;Compress=True;"; // TODO: make this a relative path
     public static SqlRepository Instance;
 
     private void Awake()
@@ -117,6 +117,22 @@ public class SqlRepository : MonoBehaviour
         command.ExecuteNonQuery();
     }
 
+    public void InsertCharacterItems(string itemsJson, int characterId)
+    {
+        var query = $"INSERT INTO CharacterItems (Items, CharacterId) VALUES ('{itemsJson}', {characterId})";
+        var command = GetCommand();
+        command.CommandText = query;
+        command.ExecuteNonQuery();
+    }
+
+    public void UpdateCharacterItems(string itemsJson, int characterId)
+    {
+        var query = $"UPDATE CharacterItems SET Items = '{itemsJson}' WHERE CharacterId = {characterId}";
+        var command = GetCommand();
+        command.CommandText = query;
+        command.ExecuteNonQuery();
+    }
+
     public Character GetCharacter(int characterId)
     {
         var query = $"SELECT * FROM Characters WHERE Id = {characterId}";
@@ -138,6 +154,21 @@ public class SqlRepository : MonoBehaviour
     public string GetCharacterSkills(int characterId)
     {
         var query = $"SELECT * FROM CharacterSkills WHERE CharacterId = {characterId}";
+        var command = GetCommand();
+        command.CommandText = query;
+        var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            return reader.GetString(1);
+        }
+
+        return null;
+    }
+
+    public string GetCharacterItems(int characterId)
+    {
+        var query = $"SELECT * FROM CharacterItems WHERE CharacterId = {characterId}";
         var command = GetCommand();
         command.CommandText = query;
         var reader = command.ExecuteReader();

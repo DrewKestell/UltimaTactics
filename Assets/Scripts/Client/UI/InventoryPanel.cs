@@ -1,5 +1,7 @@
 #if CLIENT_BUILD || UNITY_EDITOR
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,8 +32,9 @@ public class InventoryPanel : MonoBehaviour
         if (iso.Type == ItemType.Armor)
         {
             var aso = iso as ArmorScriptableObject;
-            text = $@"
-<b>Belt</b>
+            var sb = new StringBuilder();
+            sb.Append($@"<b>Belt</b>
+
 <b>Type:</b> {iso.Type}
 <b>Equip Slot:</b> {iso.EquipSlot}
 
@@ -43,10 +46,20 @@ public class InventoryPanel : MonoBehaviour
 <b>Fire Resistance:</b> {aso.FireResistance}
 <b>Cold Resistance:</b> {aso.ColdResistance}
 <b>Poison Resistance:</b> {aso.PoisonResistance}
-<b>Energy Resistance:</b> {aso.EnergyResistance}";
+<b>Energy Resistance:</b> {aso.EnergyResistance}");
 
-//<b><color=#7fff00>Hit Point Increase:</color></b> 10
-//<b><color=#7fff00>Lower Reagent Cost:</color></b> 5%";
+            if (e.Item.Modifiers.Length > 0)
+            {
+                sb.AppendLine(string.Empty);
+                sb.AppendLine(string.Empty);
+            }
+
+            foreach (var mod in e.Item.Modifiers)
+            {
+                sb.AppendLine($"<b><color=#7fff00>{mod.Modifier.GetAttribute<DisplayAttribute>().Name}:</color></b> {mod.Value}");
+            }
+
+            text = sb.ToString();
         }
         else
         {

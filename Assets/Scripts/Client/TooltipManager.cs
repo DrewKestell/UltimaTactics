@@ -24,8 +24,17 @@ public class TooltipManager : MonoBehaviour
         container.SetActive(false);
     }
 
-    public void SetText(string newText)
+    public void SetText(Vector2 tooltipPos, string newText)
     {
         text.text = newText;
+        var size = text.GetPreferredValues();
+        var containerRect = container.GetComponent<RectTransform>();
+        containerRect.sizeDelta = new Vector2(size.x + 20, size.y + 20);
+
+        var currentScale = Screen.width / (float)1920;
+        var containerWidth = containerRect.sizeDelta.x;
+        var newWidth = ((containerWidth / 2) + 30) * currentScale;
+        var newPosition = new Vector2(tooltipPos.x + newWidth, tooltipPos.y);
+        container.transform.position = newPosition;
     }
 }

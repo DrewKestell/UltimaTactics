@@ -1,6 +1,6 @@
 using Unity.Netcode;
 
-public partial class Inventory : NetworkBehaviour
+public partial class Inventory : WorldSaved
 {
     public PrimitiveKeyedNetworkDictionary<int, SerializableItem> Items;
 

@@ -36,7 +36,12 @@ public partial class ConnectionManager : NetworkBehaviour
             var obj = Instantiate(inventoryPrefab);
             obj.GetComponent<Inventory>().Items.Add(obj.GetInstanceID(), new SerializableItem
             {
-                Name = ItemName.Belt
+                Name = ItemName.Belt,
+                Modifiers = new FixedList128Bytes<ItemModifierValue>
+                {
+                    new ItemModifierValue { Modifier = ItemModifier.LowerReagentCost, Value = 5 },
+                    new ItemModifierValue { Modifier = ItemModifier.HitPointIncrease, Value = 10 }
+                }
             });
             var networkObj = obj.GetComponent<NetworkObject>();
             networkObj.Spawn();

@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using Unity.Collections;
@@ -6,6 +7,7 @@ using Unity.Netcode;
 public struct SerializableItem : INetworkSerializable, IEquatable<SerializableItem>
 {
     public ItemName Name;
+    [JsonConverter(typeof(FixedList128BytesConverter))]
     public FixedList128Bytes<ItemModifierValue> Modifiers;
 
     public bool Equals(SerializableItem other)
@@ -45,5 +47,33 @@ public struct SerializableItem : INetworkSerializable, IEquatable<SerializableIt
                 serializer.SerializeValue(ref Modifiers.ElementAt(n));
             }
         }
+    }
+}
+
+public class FixedList128BytesConverter : JsonConverter<FixedList128Bytes<ItemModifierValue>>
+{
+    public override void WriteJson(JsonWriter writer, FixedList128Bytes<ItemModifierValue> value, JsonSerializer serializer)
+    {
+        var arr = value.ToArray();
+        writer.WriteValue(JsonConvert.SerializeObject(arr));
+    }
+
+    public override FixedList128Bytes<ItemModifierValue> ReadJson(JsonReader reader, Type objectType, FixedList128Bytes<ItemModifierValue> existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+        if (hasExistingValue)
+        {
+            return existingValue;
+        }
+
+        var val = reader.ReadAsString();
+        var arr = JsonConvert.DeserializeObject<ItemModifierValue[]>(val);
+        var fixedList = new FixedList128Bytes<ItemModifierValue>();
+        
+        foreach (var i in arr)
+        {
+            fixedList.Add(i);
+        }
+
+        return fixedList;
     }
 }
