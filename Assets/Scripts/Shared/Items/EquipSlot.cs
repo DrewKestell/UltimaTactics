@@ -1,5 +1,6 @@
 public enum EquipSlot : byte
 {
+    None,
     RightHand,
     LeftHand,
     TwoHand,

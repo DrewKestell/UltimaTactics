@@ -161,8 +161,11 @@ public struct ItemAddedToInventoryEvent : IEvent
 {
     public ItemAddedToInventoryEvent(int itemId, SerializableItem item)
     {
+        ItemId = itemId;
         Item = item;
     }
+
+    public int ItemId { get; }
 
     public SerializableItem Item { get; }
 }

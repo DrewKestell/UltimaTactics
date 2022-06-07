@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ItemsManager : MonoBehaviour
+public class ItemManager : MonoBehaviour
 {
     [SerializeField] private ItemScriptableObject[] Items;
 
     public Dictionary<ItemName, ItemScriptableObject> AllItems;
 
-    public static ItemsManager Instance;
+    public static ItemManager Instance;
 
     private void Awake()
     {

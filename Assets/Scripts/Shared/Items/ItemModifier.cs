@@ -1,8 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 public enum ItemModifier : byte
 {
+    [Display(Name = "Damage Increase")]
     DamageIncrease,
+
+    [Display(Name = "Lower Reagent Cost")]
     LowerReagentCost,
-    FireResist,
-    ColdResist,
+
+    [Display(Name = "Hit Point Increase")]
     HitPointIncrease
 }

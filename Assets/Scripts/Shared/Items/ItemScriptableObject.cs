@@ -1,7 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/ItemScriptableObject", order = 1)]
-public class ItemScriptableObject : ScriptableObject
+public abstract class ItemScriptableObject : ScriptableObject
 {
     // Gameplay
     public ItemName Name;
@@ -13,7 +12,7 @@ public class ItemScriptableObject : ScriptableObject
     public bool Usable;
 
     // Visuals
-    public Texture2D InventorySprite;
+    public Sprite InventorySprite;
     public Mesh Mesh;
     public Material Material;
 }
