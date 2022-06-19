@@ -1718,7 +1718,7 @@ GameObject:
   - component: {fileID: 336438056}
   - component: {fileID: 336438055}
   m_Layer: 0
-  m_Name: Text
+  m_Name: ContextMenuText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3421,7 +3421,7 @@ GameObject:
   - component: {fileID: 748703947}
   - component: {fileID: 748703946}
   m_Layer: 0
-  m_Name: Text
+  m_Name: ContextMenuText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9136,7 +9136,7 @@ GameObject:
   - component: {fileID: 7709198919245145886}
   - component: {fileID: 8966506396309719016}
   m_Layer: 0
-  m_Name: Text
+  m_Name: ContextMenuText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
