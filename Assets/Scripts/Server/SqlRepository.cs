@@ -133,6 +133,22 @@ public class SqlRepository : MonoBehaviour
         command.ExecuteNonQuery();
     }
 
+    public void InsertCharacterEquipment(string equipmentJson, int characterId)
+    {
+        var query = $"INSERT INTO CharacterEquipment (Equipment, CharacterId) VALUES ('{equipmentJson}', {characterId})";
+        var command = GetCommand();
+        command.CommandText = query;
+        command.ExecuteNonQuery();
+    }
+
+    public void UpdateCharacterEquipment(string equipmentJson, int characterId)
+    {
+        var query = $"UPDATE CharacterEquipment SET Equipment = '{equipmentJson}' WHERE CharacterId = {characterId}";
+        var command = GetCommand();
+        command.CommandText = query;
+        command.ExecuteNonQuery();
+    }
+
     public Character GetCharacter(int characterId)
     {
         var query = $"SELECT * FROM Characters WHERE Id = {characterId}";
@@ -169,6 +185,21 @@ public class SqlRepository : MonoBehaviour
     public string GetCharacterItems(int characterId)
     {
         var query = $"SELECT * FROM CharacterItems WHERE CharacterId = {characterId}";
+        var command = GetCommand();
+        command.CommandText = query;
+        var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            return reader.GetString(1);
+        }
+
+        return null;
+    }
+
+    public string GetCharacterEquipment(int characterId)
+    {
+        var query = $"SELECT * FROM CharacterEquipment WHERE CharacterId = {characterId}";
         var command = GetCommand();
         command.CommandText = query;
         var reader = command.ExecuteReader();

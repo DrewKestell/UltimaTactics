@@ -13,6 +13,7 @@ public partial class ConnectionManager : NetworkBehaviour
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject inventoryPrefab;
     [SerializeField] private GameObject skillsPrefab;
+    [SerializeField] private GameObject equipmentPrefab;
 
     [SerializeField] private GameObject testNetworkObject;
 

@@ -111,6 +111,15 @@ public partial class ConnectionManager : NetworkBehaviour
         inventoryNetworkObject.SpawnWithOwnership(clientId);
         inventoryNetworkObject.TrySetParent(playerObject);
 
+        // Instantiate Equipment object
+        var equipmentObject = Instantiate(equipmentPrefab);
+        var equipmentComponent = equipmentObject.GetComponent<Equipment>();
+        equipmentComponent.Deserialize(characterId);
+        var equipmentNetworkObject = equipmentObject.GetComponent<NetworkObject>();
+        equipmentNetworkObject.SpawnWithOwnership(clientId);
+        equipmentNetworkObject.TrySetParent(playerObject);
+        networkObjectToShowOnConnect.Add(equipmentNetworkObject);
+
         foreach (var obj in networkObjectToShowOnConnect)
         {
             foreach (var p in clientInGameMap)

@@ -16,7 +16,10 @@ public class TooltipManager : MonoBehaviour
 
     public void Show()
     {
-        container.SetActive(true);
+        if (!ContextMenu.Instance.IsActive)
+        {
+            container.SetActive(true);
+        }
     }
 
     public void Hide()

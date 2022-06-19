@@ -1,6 +1,7 @@
 #if SERVER_BUILD || UNITY_EDITOR
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public static class CharacterGenerator
@@ -40,6 +41,11 @@ public static class CharacterGenerator
         });
         var itemsJson = JsonConvert.SerializeObject(items);
         SqlRepository.Instance.InsertCharacterItems(itemsJson, characterId);
+
+        // TODO: starting equipment?
+        var equipment = new NewtonsoftSerializableEquipment();
+        var equipmentJson = JsonConvert.SerializeObject(equipment);
+        SqlRepository.Instance.InsertCharacterEquipment(equipmentJson, characterId);
 
         return new CharacterListItem { Id = characterId, Name = name };
     }

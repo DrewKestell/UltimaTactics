@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a8e44a28a5cfd24aa25ffd8d31b3574, type: 3}
   m_Name: Belt
   m_EditorClassIdentifier: 
-  Name: 3
+  Name: 4
   Type: 2
   EquipSlot: 12
   Consumable: 0

@@ -1,7 +1,11 @@
 #if CLIENT_BUILD || UNITY_EDITOR
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
 
 public partial class PlayerController : NetworkBehaviour
 {
@@ -11,6 +15,8 @@ public partial class PlayerController : NetworkBehaviour
 
     private bool readyToDrawWeapons = true;
     private float combatStartTime;
+    private bool pointerOverContextMenu = false;
+    private bool pointerOverUi = false;
 
     // input state
     private bool leftClickHeld;
@@ -40,6 +46,15 @@ public partial class PlayerController : NetworkBehaviour
 
     private void OnUpdate()
     {
+        var playerInputComponent = GetComponent<PlayerInput>();
+        var inputDevice = playerInputComponent.devices[1];
+        var deviceId = inputDevice.deviceId;
+        var inputModule = EventSystem.current.currentInputModule as InputSystemUIInputModule;
+        var raycastResult = inputModule.GetLastRaycastResult(deviceId);
+        pointerOverContextMenu = raycastResult.gameObject?.name == "ContextMenuText";
+
+        pointerOverUi = EventSystem.current.IsPointerOverGameObject();
+
         if (combatStartTime != 0 && Time.time > combatStartTime + 3)
         {
             combatStartTime = 0;
@@ -73,16 +88,27 @@ public partial class PlayerController : NetworkBehaviour
 
     public void OnCameraZoom(InputAction.CallbackContext inputValue)
     {
+        if (pointerOverUi)
+            return;
+
         thirdPersonCamera?.Zoom(inputValue.ReadValue<Vector2>().normalized.y);
     }
 
     public void OnLeftClick(InputAction.CallbackContext inputValue)
     {
+        if (pointerOverContextMenu)
+            return;
+
+        ContextMenu.Instance.Deactivate();
+
         leftClickHeld = inputValue.ReadValueAsButton();
     }
 
     public void OnRightClick(InputAction.CallbackContext inputValue)
     {
+        if (pointerOverUi)
+            return;
+
         rightClickHeld = inputValue.ReadValueAsButton();
 
         if (!rightClickHeld)
@@ -93,6 +119,9 @@ public partial class PlayerController : NetworkBehaviour
 
     public void OnMoveMouse(InputAction.CallbackContext inputValue)
     {
+        if (pointerOverUi)
+            return;
+
         // right-click + drag -> rotate player and camera
         if (rightClickHeld)
         {

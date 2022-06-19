@@ -3,6 +3,9 @@ using UnityEngine;
 
 public enum ItemName
 {
+    [Display(Name = "None")]
+    None,
+
     [Display(Name = "Mace")]
     Mace,
 
